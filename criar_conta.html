@@ -1,0 +1,335 @@
+<html>
+  <head>
+    <title>Criar conta</title>
+    <link rel="stylesheet" href="criar_conta.css">
+    <meta charset="UTF-8">
+  </head>
+
+  <body>
+    <form id="formCriarConta">
+      <h2>Insira o seu nome completo:</h2>
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" required />
+
+      <h2>Insira o seu email:</h2>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+
+      <h2>Insira a sua Morada:</h2>
+      <label for="morada">Morada:</label>
+      <input type="text" id="morada" name="morada" required />
+
+      <h2>Insira o seu número de telefone:</h2>
+      <label for="telefone">Número de telefone:</label>
+      <input type="number" id="telefone" name="telefone" required />
+
+      <h2>Insira a sua nacionalidade:</h2>
+      <label for="nacionalidade">Nacionalidade:</label>
+      <select name="nacionalidade" id="nacionalidade" required>
+        <option value="">Selecionar</option>
+        <option value="Portuguesa">Portuguesa</option>
+        <option value="Brasileira">Brasileira</option>
+        <option value="Englesa">Englesa</option>
+        <option value="Espanhola">Espanhola</option>
+        <option value="Francesa">Francesa</option>
+        <option value="Luxemburguesa">Luxemburguesa</option>
+        <option value="Holandesa">Holandesa</option>
+        <option value="Outro">Outro</option>
+        <option value="o utilizador prefere não dizer a sua nacionalidade">Prefiro não dizer</option>
+      </select>
+
+      <h2>Insira o seu genero:</h2>
+      <div style="display: flex; gap: 20px; align-items: center;">
+        <label><input type="radio" name="genero" value="Masculino" required> Masculino</label>
+        <label><input type="radio" name="genero" value="Feminino"> Feminino</label>
+        <label><input type="radio" name="genero" value="Outro"> Outro</label>
+        <label><input type="radio" name="genero" value="o utilizador prefere não dizer o seu genero"> Prefiro não dizer</label>
+      </div>
+
+      <h2>Insira a palavra passe que deseja:</h2>
+      <input type="password" id="password" name="password" required />
+
+      <p>Força da palavra-passe: <span id="strength">-</span></p>
+      <p id="missingRules" style="margin-top:-10px; font-size:0.95em;"></p>
+      <br>
+
+      <label for="termos" style="display: flex; align-items: center; gap: 5px;">
+        <input type="checkbox" id="termos" name="termos" required>
+        Eu concordo com os
+        <a href="termos.html" target="_blank" style="color: #007BFF; font-weight: 600; text-decoration: none">
+          Termos e condições
+        </a>
+      </label>
+
+      <button type="submit">Confirmar</button>
+    </form>
+
+    <!-- VERIFICAÇÃO DE EMAIL -->
+    <div id="verificacaoContainer" style="display: none;" class="form-container fade-in">
+      <form>
+        <h2>Confirme o seu Email</h2>
+        
+        <div class="msg-info">
+          <strong>Conta criada!</strong><br>
+          Enviámos um código de verificação para o teu email. Verifica a caixa de entrada (e spam).
+        </div>
+
+        <label>Código de Verificação:</label>
+        <div class="code-input-group" id="codeGroupVerificar">
+          <input type="text" maxlength="1" class="code-digit" data-index="0" inputmode="numeric" autocomplete="off">
+          <input type="text" maxlength="1" class="code-digit" data-index="1" inputmode="numeric" autocomplete="off">
+          <input type="text" maxlength="1" class="code-digit" data-index="2" inputmode="numeric" autocomplete="off">
+          <span class="code-separator">—</span>
+          <input type="text" maxlength="1" class="code-digit" data-index="3" inputmode="numeric" autocomplete="off">
+          <input type="text" maxlength="1" class="code-digit" data-index="4" inputmode="numeric" autocomplete="off">
+          <input type="text" maxlength="1" class="code-digit" data-index="5" inputmode="numeric" autocomplete="off">
+        </div>
+        <input type="hidden" id="codigoVerificacao">
+
+        <p id="msgErroVerify" class="msg-erro"></p>
+        <p id="msgSucessoVerify" class="msg-sucesso"></p>
+
+        <button type="button" id="btnVerificar">Validar Código</button>
+      </form>
+    </div>
+
+    <script>
+      const formCriarConta = document.getElementById("formCriarConta");
+      const verificacaoContainer = document.getElementById("verificacaoContainer");
+      const btnVerificar = document.getElementById("btnVerificar");
+      const passwordInput = document.getElementById("password");
+      const strengthText = document.getElementById("strength");
+      const missingRulesText = document.getElementById("missingRules");
+
+      let emailDoUtilizador = "";
+
+      // ── CODE INPUT: Lógica das caixas individuais ──
+      function setupCodeGroup(groupEl, hiddenInput) {
+        const digits = groupEl.querySelectorAll('.code-digit');
+
+        function updateHidden() {
+          let code = '';
+          digits.forEach(d => code += d.value);
+          hiddenInput.value = code;
+        }
+
+        digits.forEach((input, i) => {
+          input.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (!/^\d$/.test(val)) {
+              e.target.value = '';
+              updateHidden();
+              return;
+            }
+            e.target.classList.remove('code-digit-error');
+            e.target.classList.add('code-digit-filled');
+            updateHidden();
+            if (i < digits.length - 1) {
+              digits[i + 1].focus();
+            }
+          });
+
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace') {
+              if (input.value === '' && i > 0) {
+                digits[i - 1].focus();
+                digits[i - 1].value = '';
+                digits[i - 1].classList.remove('code-digit-filled');
+              } else {
+                input.value = '';
+                input.classList.remove('code-digit-filled');
+              }
+              updateHidden();
+            }
+            if (e.key === 'ArrowLeft' && i > 0) digits[i - 1].focus();
+            if (e.key === 'ArrowRight' && i < digits.length - 1) digits[i + 1].focus();
+          });
+
+          input.addEventListener('focus', () => {
+            input.select();
+          });
+
+          input.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const pasted = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+            pasted.split('').forEach((char, idx) => {
+              if (digits[idx]) {
+                digits[idx].value = char;
+                digits[idx].classList.add('code-digit-filled');
+              }
+            });
+            updateHidden();
+            const nextEmpty = [...digits].findIndex(d => !d.value);
+            if (nextEmpty !== -1) digits[nextEmpty].focus();
+            else digits[digits.length - 1].focus();
+          });
+        });
+
+        return {
+          clear() {
+            digits.forEach(d => {
+              d.value = '';
+              d.classList.remove('code-digit-filled', 'code-digit-error');
+            });
+            hiddenInput.value = '';
+          },
+          setError() {
+            digits.forEach(d => d.classList.add('code-digit-error'));
+          },
+          clearError() {
+            digits.forEach(d => d.classList.remove('code-digit-error'));
+          },
+          focus() {
+            digits[0].focus();
+          },
+          getValue() {
+            updateHidden();
+            return hiddenInput.value;
+          }
+        };
+      }
+
+      // Inicializar o grupo de código
+      const codeVerificar = setupCodeGroup(
+        document.getElementById('codeGroupVerificar'),
+        document.getElementById('codigoVerificacao')
+      );
+
+      // ── Password strength ──
+      function checkStrong(pwRaw) {
+        const pw = (pwRaw || "").trim();
+        const rules = [
+          { ok: pw.length >= 8, msg: "mínimo 8 caracteres" },
+          { ok: /[A-Z]/.test(pw), msg: "1 letra maiúscula (A-Z)" },
+          { ok: /[a-z]/.test(pw), msg: "1 letra minúscula (a-z)" },
+          { ok: /[0-9]/.test(pw), msg: "1 número (0-9)" },
+          { ok: /[^A-Za-z0-9]/.test(pw), msg: "1 símbolo (ex: ! @ #)" },
+        ];
+        return {
+          ok: rules.every(r => r.ok),
+          missing: rules.filter(r => !r.ok).map(r => r.msg),
+          pw,
+        };
+      }
+
+      passwordInput.addEventListener("input", () => {
+        const r = checkStrong(passwordInput.value);
+        if (!r.pw) {
+          strengthText.textContent = "-";
+          strengthText.className = "";
+          if (missingRulesText) missingRulesText.textContent = "";
+          return;
+        }
+        if (r.ok) {
+          strengthText.textContent = "Forte";
+          strengthText.className = "forte";
+          if (missingRulesText) missingRulesText.textContent = "";
+        } else {
+          const level = r.missing.length >= 3 ? "fraca" : "media";
+          strengthText.textContent = level === "fraca" ? "Fraca" : "Média";
+          strengthText.className = level;
+          if (missingRulesText) missingRulesText.textContent = "Falta: " + r.missing.join(", ");
+        }
+      });
+
+      // ── PASSO 1: Enviar Registo ──
+      formCriarConta.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(formCriarConta);
+        const body = Object.fromEntries(formData.entries());
+        body.password = (body.password || "").trim();
+
+        const r = checkStrong(body.password);
+        if (!r.ok) {
+          alert("A palavra-passe é fraca. Falta: " + r.missing.join(", "));
+          return;
+        }
+
+        try {
+          const res = await fetch("http://localhost:3000/api/registar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            alert(data.error || "Erro ao criar conta.");
+            return;
+          }
+
+          // SUCESSO NO REGISTO:
+          emailDoUtilizador = body.email;
+          
+          // Esconder o formulário de registo
+          formCriarConta.style.display = "none";
+          
+          // Mostrar o formulário de código
+          verificacaoContainer.style.display = "block";
+          codeVerificar.clear();
+          setTimeout(() => codeVerificar.focus(), 300);
+
+        } catch (err) {
+          console.error(err);
+          alert("Erro de ligação ao servidor.");
+        }
+      });
+
+      // ── PASSO 2: Validar Código ──
+      btnVerificar.addEventListener("click", async () => {
+        const msgErro = document.getElementById("msgErroVerify");
+        const msgSucesso = document.getElementById("msgSucessoVerify");
+        msgErro.style.display = "none";
+        msgSucesso.style.display = "none";
+        codeVerificar.clearError();
+
+        const codigoInserido = codeVerificar.getValue().trim();
+
+        if (!codigoInserido || codigoInserido.length < 6) {
+          msgErro.textContent = "Insere o código completo (6 dígitos).";
+          msgErro.style.display = "block";
+          codeVerificar.setError();
+          return;
+        }
+
+        try {
+          const res = await fetch("http://localhost:3000/api/confirmar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: emailDoUtilizador,
+              codigo: codigoInserido
+            }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            msgErro.textContent = data.error || "Código incorreto.";
+            msgErro.style.display = "block";
+            codeVerificar.setError();
+            return;
+          }
+
+          // SUCESSO NA CONFIRMAÇÃO:
+          localStorage.setItem("emailSocio", emailDoUtilizador);
+          
+          msgSucesso.textContent = "Email confirmado com sucesso! A redirecionar...";
+          msgSucesso.style.display = "block";
+          btnVerificar.style.display = "none";
+
+          setTimeout(() => {
+            window.location.href = `areaSocio.html?email=${encodeURIComponent(emailDoUtilizador)}`;
+          }, 1500);
+
+        } catch (err) {
+          console.error(err);
+          msgErro.textContent = "Erro de ligação ao servidor.";
+          msgErro.style.display = "block";
+        }
+      });
+    </script>
+  </body>
+</html>

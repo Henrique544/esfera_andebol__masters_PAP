@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <title>Fazer login</title>
+    <link rel="stylesheet" href="login.css">
+    <meta charset="UTF-8">
+  </head>
+  <body>
+    <nav style="white-space: nowrap;">
+      <div style="display: inline-block; vertical-align: middle;">
+        <img src="esfera.png" style="vertical-align: middle; height: 80px;" usemap="#esfera" />
+        <h1 style="display: inline; vertical-align: middle; margin: 0 10px;">Esfera Andebol Masters</h1>
+      </div>
+      <map name="esfera">  
+        <area shape="rect" coords="62,52,79,66" title="voltar ao inicio" href="pagina_principal.html"> 
+        <area shape="circle" coords="62,52,17" title="voltar ao inicio" href="pagina_principal.html">  
+        <area shape="poly" coords="18,5,3,14,32,5,7,26,3,40,2,58,8,86,4,72,13,95,30,103,24,110,61,118,42,111,81,114,104,100,94,105,117,86,113,76,111,66,116,47,104,40,100,30,90,21,83,14,71,10,58,9,49,13,23,19,76,87,29,71,46,44,77,51,90,65,52,71,35,55,73,41,57,93,68,99,48,96,57,36,62,52,79,66" title="voltar ao inicio" href="pagina_principal.html"> 
+      </map>
+      <a href="Noticias.html" style="display: inline-block; margin: 0 15px; vertical-align: middle;">Noticias</a>
+      <a href="bilhetes.html" style="display: inline-block; margin: 0 15px; vertical-align: middle;">Bilhetes</a>
+      <a href="inscricoes.html" style="display: inline-block; margin: 0 15px; vertical-align: middle;">Inscrições</a>
+      <a href="loja.html" style="display: inline-block; margin: 0 15px; vertical-align: middle;">Loja</a>
+      <a href="Calendario.html" style="display: inline-block; margin: 0 15px; vertical-align: middle;">Calendário</a>
+      <button class="botao-link" onclick="window.location.href='login.html';">Fazer login / Criar conta</button>
+    </nav>
+
+    <div class="form-container">
+      <form id="formLogin">
+        <h2>Entrar na Conta</h2>
+
+        <p id="feedbackGeral" class="msg-erro" style="margin-bottom: 15px;"></p>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        
+        <label for="password">Palavra-passe:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Entrar</button>
+        
+        <p style="margin-top: 10px; text-align: center;">
+          <a href="#" id="linkEsqueci" style="color: #ccc; font-size: 0.9em; text-decoration: underline;">Esqueci-me da palavra-passe</a>
+        </p>
+
+        <p style="margin-top: 10px; text-align: center;">
+          Ainda não tens conta? <a href="criar_conta.html" style="color: white; font-weight: bold;">Regista-te aqui</a>
+        </p>
+      </form>
+
+      <!-- VALIDAÇÃO DE CONTA -->
+      <div id="divValidacao" style="display: none;" class="fade-in">
+        <form id="formValidar">
+          <h2>Ativar Conta</h2>
+          
+          <div id="infoCodigo" class="msg-info"></div>
+
+          <p style="margin-bottom: 18px; opacity: 0.85; font-size: 0.95em;">A tua conta ainda não foi ativada. Insere o código para continuar.</p>
+
+          <label>Código de Verificação:</label>
+          <div class="code-input-group" id="codeGroupValidar">
+            <input type="text" maxlength="1" class="code-digit" data-index="0" inputmode="numeric" autocomplete="off">
+            <input type="text" maxlength="1" class="code-digit" data-index="1" inputmode="numeric" autocomplete="off">
+            <input type="text" maxlength="1" class="code-digit" data-index="2" inputmode="numeric" autocomplete="off">
+            <span class="code-separator">—</span>
+            <input type="text" maxlength="1" class="code-digit" data-index="3" inputmode="numeric" autocomplete="off">
+            <input type="text" maxlength="1" class="code-digit" data-index="4" inputmode="numeric" autocomplete="off">
+            <input type="text" maxlength="1" class="code-digit" data-index="5" inputmode="numeric" autocomplete="off">
+          </div>
+          <!-- Campo escondido que junta os dígitos -->
+          <input type="hidden" id="codigoInput">
+          
+          <p id="feedbackValidacao" class="msg-erro"></p>
+          <p id="sucessoValidacao" class="msg-sucesso"></p>
+
+          <button type="button" id="btnConfirmarCodigo">Confirmar Código</button>
+          <button type="button" id="btnVoltar" class="btn-secondary">Voltar</button>
+        </form>
+      </div>
+
+      <!-- RECUPERAR PASSWORD: Passo 1 - Pedir email -->
+      <div id="divRecuperarEmail" style="display: none;" class="fade-in">
+        <form>
+          <h2>Recuperar Palavra-passe</h2>
+          <p style="margin-bottom: 18px; opacity: 0.85; font-size: 0.95em;">Insere o teu email para receberes um código de recuperação.</p>
+
+          <label for="recuperarEmail">Email:</label>
+          <input type="email" id="recuperarEmail" required>
+
+          <p id="feedbackRecuperar" class="msg-erro"></p>
+          <p id="sucessoRecuperar" class="msg-sucesso"></p>
+
+          <button type="button" id="btnEnviarRecuperar">Enviar Código</button>
+          <button type="button" id="btnVoltarRecuperar" class="btn-secondary">Voltar ao Login</button>
+        </form>
+      </div>
+
+      <!-- RECUPERAR PASSWORD: Passo 2 - Código + Nova password -->
+      <div id="divResetPassword" style="display: none;" class="fade-in">
+        <form>
+          <h2>Redefinir Palavra-passe</h2>
+          <p style="margin-bottom: 18px; opacity: 0.85; font-size: 0.95em;">Insere o código que recebeste por email e a tua nova palavra-passe.</p>
+
+          <label>Código de Recuperação:</label>
+          <div class="code-input-group" id="codeGroupReset">
+            <input type="text" maxlength="1" class="code-digit" data-index="0" inputmode="numeric" autocomplete="off">
+            <input type="text" maxlength="1" class="code-digit" data-index="1" inputmode="numeric" autocomplete="off">
+            <input type="text" maxlength="1" class="code-digit" data-index="2" inputmode="numeric" autocomplete="off">
+            <span class="code-separator">—</span>
+            <input type="text" maxlength="1" class="code-digit" data-index="3" inputmode="numeric" autocomplete="off">
+            <input type="text" maxlength="1" class="code-digit" data-index="4" inputmode="numeric" autocomplete="off">
+            <input type="text" maxlength="1" class="code-digit" data-index="5" inputmode="numeric" autocomplete="off">
+          </div>
+          <input type="hidden" id="resetCodigo">
+
+          <label for="resetNovaPass" style="margin-top: 18px;">Nova Palavra-passe:</label>
+          <input type="password" id="resetNovaPass" required>
+          <div class="password-strength-bar">
+            <div class="strength-fill" id="strengthFill"></div>
+          </div>
+          <p class="strength-label">Força: <span id="resetStrength">-</span></p>
+          <p id="resetMissing" class="strength-missing"></p>
+
+          <label for="resetConfirmarPass" style="margin-top: 10px;">Confirmar Nova Palavra-passe:</label>
+          <input type="password" id="resetConfirmarPass" required>
+
+          <p id="feedbackReset" class="msg-erro"></p>
+          <p id="sucessoReset" class="msg-sucesso"></p>
+
+          <button type="button" id="btnConfirmarReset">Redefinir Palavra-passe</button>
+          <button type="button" id="btnVoltarReset" class="btn-secondary">Voltar</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // ── Verificar sessão ativa ──
+      (function() {
+        var sessao = localStorage.getItem("sessaoAtiva");
+        var email = localStorage.getItem("emailSocio");
+        var params = new URLSearchParams(window.location.search);
+        if (params.get("logout") === "1") {
+          localStorage.removeItem("sessaoAtiva");
+          localStorage.removeItem("emailSocio");
+          localStorage.removeItem("nomeSocio");
+          localStorage.removeItem("tipoSocio");
+          return;
+        }
+        if (sessao === "true" && email) {
+          if (localStorage.getItem("esfera_admin") === "true") {
+            window.location.href = "admin.html";
+          } else {
+            window.location.href = "areaSocio.html?email=" + encodeURIComponent(email);
+          }
+          return;
+        }
+      })();
+
+      // ── CODE INPUT: Lógica das caixas individuais ──
+      function setupCodeGroup(groupEl, hiddenInput) {
+        const digits = groupEl.querySelectorAll('.code-digit');
+
+        function updateHidden() {
+          let code = '';
+          digits.forEach(d => code += d.value);
+          hiddenInput.value = code;
+        }
+
+        digits.forEach((input, i) => {
+          // Ao escrever, avança para o próximo
+          input.addEventListener('input', (e) => {
+            const val = e.target.value;
+            // Só aceitar dígitos
+            if (!/^\d$/.test(val)) {
+              e.target.value = '';
+              updateHidden();
+              return;
+            }
+            e.target.classList.remove('code-digit-error');
+            e.target.classList.add('code-digit-filled');
+            updateHidden();
+            // Avançar
+            if (i < digits.length - 1) {
+              digits[i + 1].focus();
+            }
+          });
+
+          // Backspace: apaga e volta atrás
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace') {
+              if (input.value === '' && i > 0) {
+                digits[i - 1].focus();
+                digits[i - 1].value = '';
+                digits[i - 1].classList.remove('code-digit-filled');
+              } else {
+                input.value = '';
+                input.classList.remove('code-digit-filled');
+              }
+              updateHidden();
+            }
+            // Setas
+            if (e.key === 'ArrowLeft' && i > 0) digits[i - 1].focus();
+            if (e.key === 'ArrowRight' && i < digits.length - 1) digits[i + 1].focus();
+          });
+
+          // Focus visual
+          input.addEventListener('focus', () => {
+            input.select();
+          });
+
+          // Paste: colar código inteiro
+          input.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const pasted = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+            pasted.split('').forEach((char, idx) => {
+              if (digits[idx]) {
+                digits[idx].value = char;
+                digits[idx].classList.add('code-digit-filled');
+              }
+            });
+            updateHidden();
+            const nextEmpty = [...digits].findIndex(d => !d.value);
+            if (nextEmpty !== -1) digits[nextEmpty].focus();
+            else digits[digits.length - 1].focus();
+          });
+        });
+
+        return {
+          clear() {
+            digits.forEach(d => {
+              d.value = '';
+              d.classList.remove('code-digit-filled', 'code-digit-error');
+            });
+            hiddenInput.value = '';
+          },
+          setError() {
+            digits.forEach(d => d.classList.add('code-digit-error'));
+          },
+          clearError() {
+            digits.forEach(d => d.classList.remove('code-digit-error'));
+          },
+          focus() {
+            digits[0].focus();
+          },
+          getValue() {
+            updateHidden();
+            return hiddenInput.value;
+          }
+        };
+      }
+
+      // Inicializar os dois grupos de código
+      const codeValidar = setupCodeGroup(
+        document.getElementById('codeGroupValidar'),
+        document.getElementById('codigoInput')
+      );
+      const codeReset = setupCodeGroup(
+        document.getElementById('codeGroupReset'),
+        document.getElementById('resetCodigo')
+      );
+
+      // ── Elementos ──
+      const formLogin = document.getElementById("formLogin");
+      const divValidacao = document.getElementById("divValidacao");
+
+      const emailInput = document.getElementById("email");
+      const passInput = document.getElementById("password");
+      const feedbackGeral = document.getElementById("feedbackGeral");
+
+      const infoCodigo = document.getElementById("infoCodigo");
+      const feedbackValidacao = document.getElementById("feedbackValidacao");
+      const sucessoValidacao = document.getElementById("sucessoValidacao");
+      const btnConfirmarCodigo = document.getElementById("btnConfirmarCodigo");
+      const btnVoltar = document.getElementById("btnVoltar");
+
+      let emailPendente = "";
+
+      // ── Funções auxiliares ──
+      function limparErros() {
+        emailInput.classList.remove("input-erro");
+        passInput.classList.remove("input-erro");
+        codeValidar.clearError();
+        codeReset.clearError();
+        feedbackGeral.style.display = "none";
+        feedbackGeral.textContent = "";
+        feedbackValidacao.style.display = "none";
+        sucessoValidacao.style.display = "none";
+      }
+
+      function mostrarErroLogin(msg) {
+        feedbackGeral.textContent = msg;
+        feedbackGeral.style.display = "block";
+        emailInput.classList.add("input-erro");
+        passInput.classList.add("input-erro");
+      }
+
+      // ── 1. LOGIN ──
+      formLogin.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        limparErros();
+
+        const email = emailInput.value;
+        const password = passInput.value;
+
+        try {
+          const res = await fetch("http://localhost:3000/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const data = await res.json();
+
+          if (res.status === 403 && data.needVerification) {
+            emailPendente = data.email;
+            formLogin.style.display = "none";
+            divValidacao.style.display = "block";
+
+            infoCodigo.innerHTML = `
+              <strong>Conta Inativa!</strong><br>
+              Enviámos um novo código de segurança: <br>
+              <span style="font-size: 1.4em; font-weight: bold;"></span>
+            `;
+            codeValidar.clear();
+            setTimeout(() => codeValidar.focus(), 300);
+            return;
+          }
+
+          if (!res.ok) {
+            mostrarErroLogin(data.error || "Erro ao iniciar sessão.");
+            return;
+          }
+
+          // Sucesso
+          localStorage.setItem("emailSocio", data.user.email);
+          localStorage.setItem("nomeSocio", data.user.nome);
+          localStorage.setItem("tipoSocio", data.user.tipo);
+          localStorage.setItem("sessaoAtiva", "true");
+
+          if (data.user.email === "quisinhozx@gmail.com") {     // defenição da conta que é admin 
+            localStorage.setItem("esfera_admin", "true");
+            localStorage.setItem("adminNome", data.user.nome);
+            window.location.href = "admin.html";
+          } else {
+            localStorage.removeItem("esfera_admin");
+            localStorage.removeItem("adminNome");
+            window.location.href = `areaSocio.html?email=${encodeURIComponent(data.user.email)}`;
+          }
+
+        } catch (err) {
+          console.error(err);
+          mostrarErroLogin("Sem ligação ao servidor.");
+        }
+      });
+
+      // ── 2. VALIDAÇÃO DE CONTA ──
+      btnConfirmarCodigo.addEventListener("click", async () => {
+        limparErros();
+        
+        const codigo = codeValidar.getValue().trim();
+        if (!codigo || codigo.length < 6) {
+          feedbackValidacao.textContent = "Insere o código completo (6 dígitos).";
+          feedbackValidacao.style.display = "block";
+          codeValidar.setError();
+          return;
+        }
+
+        try {
+          const res = await fetch("http://localhost:3000/api/confirmar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: emailPendente, codigo: codigo }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            feedbackValidacao.textContent = data.error || "Código incorreto.";
+            feedbackValidacao.style.display = "block";
+            codeValidar.setError();
+            return;
+          }
+
+          sucessoValidacao.textContent = "Conta ativada! A redirecionar...";
+          sucessoValidacao.style.display = "block";
+          btnConfirmarCodigo.style.display = "none"; 
+
+          setTimeout(() => {
+            alert("Conta ativada. Por favor, faz login novamente.");
+            divValidacao.style.display = "none";
+            formLogin.style.display = "block";
+            btnConfirmarCodigo.style.display = "inline-block";
+            passInput.value = "";
+            codeValidar.clear();
+          }, 1500);
+
+        } catch (err) {
+          console.error(err);
+          feedbackValidacao.textContent = "Erro de ligação.";
+          feedbackValidacao.style.display = "block";
+        }
+      });
+
+      btnVoltar.addEventListener("click", () => {
+        divValidacao.style.display = "none";
+        formLogin.style.display = "block";
+        limparErros();
+        codeValidar.clear();
+      });
+
+      // ── 3. RECUPERAÇÃO DE PASSWORD ──
+      const linkEsqueci = document.getElementById("linkEsqueci");
+      const divRecuperarEmail = document.getElementById("divRecuperarEmail");
+      const recuperarEmailInput = document.getElementById("recuperarEmail");
+      const btnEnviarRecuperar = document.getElementById("btnEnviarRecuperar");
+      const btnVoltarRecuperar = document.getElementById("btnVoltarRecuperar");
+      const feedbackRecuperar = document.getElementById("feedbackRecuperar");
+      const sucessoRecuperar = document.getElementById("sucessoRecuperar");
+
+      const divResetPassword = document.getElementById("divResetPassword");
+      const resetNovaPass = document.getElementById("resetNovaPass");
+      const resetConfirmarPass = document.getElementById("resetConfirmarPass");
+      const resetStrength = document.getElementById("resetStrength");
+      const resetMissing = document.getElementById("resetMissing");
+      const strengthFill = document.getElementById("strengthFill");
+      const btnConfirmarReset = document.getElementById("btnConfirmarReset");
+      const btnVoltarReset = document.getElementById("btnVoltarReset");
+      const feedbackReset = document.getElementById("feedbackReset");
+      const sucessoReset = document.getElementById("sucessoReset");
+
+      let emailRecuperar = "";
+
+      // Password strength
+      function checkPasswordStrength(pw) {
+        pw = (pw || "").trim();
+        const rules = [
+          { ok: pw.length >= 8, msg: "mínimo 8 caracteres" },
+          { ok: /[A-Z]/.test(pw), msg: "1 letra maiúscula (A-Z)" },
+          { ok: /[a-z]/.test(pw), msg: "1 letra minúscula (a-z)" },
+          { ok: /[0-9]/.test(pw), msg: "1 número (0-9)" },
+          { ok: /[^A-Za-z0-9]/.test(pw), msg: "1 símbolo (ex: ! @ #)" },
+        ];
+        return {
+          ok: rules.every(r => r.ok),
+          passed: rules.filter(r => r.ok).length,
+          total: rules.length,
+          missing: rules.filter(r => !r.ok).map(r => r.msg),
+          pw,
+        };
+      }
+
+      resetNovaPass.addEventListener("input", () => {
+        const r = checkPasswordStrength(resetNovaPass.value);
+        if (!r.pw) {
+          resetStrength.textContent = "-";
+          resetStrength.className = "";
+          resetMissing.textContent = "";
+          strengthFill.style.width = "0%";
+          strengthFill.className = "strength-fill";
+          return;
+        }
+        const pct = (r.passed / r.total) * 100;
+        strengthFill.style.width = pct + "%";
+
+        if (r.ok) {
+          resetStrength.textContent = "Forte";
+          resetStrength.className = "forte";
+          strengthFill.className = "strength-fill fill-forte";
+          resetMissing.textContent = "";
+        } else {
+          const level = r.missing.length >= 3 ? "fraca" : "media";
+          resetStrength.textContent = level === "fraca" ? "Fraca" : "Média";
+          resetStrength.className = level;
+          strengthFill.className = "strength-fill fill-" + level;
+          resetMissing.textContent = "Falta: " + r.missing.join(", ");
+        }
+      });
+
+      linkEsqueci.addEventListener("click", (e) => {
+        e.preventDefault();
+        formLogin.style.display = "none";
+        divRecuperarEmail.style.display = "block";
+        feedbackRecuperar.style.display = "none";
+        sucessoRecuperar.style.display = "none";
+        recuperarEmailInput.value = emailInput.value || "";
+      });
+
+      btnVoltarRecuperar.addEventListener("click", () => {
+        divRecuperarEmail.style.display = "none";
+        formLogin.style.display = "block";
+      });
+
+      btnVoltarReset.addEventListener("click", () => {
+        divResetPassword.style.display = "none";
+        divRecuperarEmail.style.display = "block";
+        codeReset.clear();
+      });
+
+      // Passo 1: Enviar código
+      btnEnviarRecuperar.addEventListener("click", async () => {
+        feedbackRecuperar.style.display = "none";
+        sucessoRecuperar.style.display = "none";
+
+        const email = recuperarEmailInput.value.trim();
+        if (!email) {
+          feedbackRecuperar.textContent = "Insere o teu email.";
+          feedbackRecuperar.style.display = "block";
+          return;
+        }
+
+        btnEnviarRecuperar.disabled = true;
+        btnEnviarRecuperar.textContent = "A enviar...";
+
+        try {
+          const res = await fetch("http://localhost:3000/api/recuperar-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            feedbackRecuperar.textContent = data.error || "Erro ao enviar código.";
+            feedbackRecuperar.style.display = "block";
+            return;
+          }
+
+          emailRecuperar = email;
+          sucessoRecuperar.textContent = "Se o email existir, receberás um código. Verifica a tua caixa de entrada.";
+          sucessoRecuperar.style.display = "block";
+
+          setTimeout(() => {
+            divRecuperarEmail.style.display = "none";
+            divResetPassword.style.display = "block";
+            feedbackReset.style.display = "none";
+            sucessoReset.style.display = "none";
+            codeReset.clear();
+            setTimeout(() => codeReset.focus(), 300);
+          }, 1500);
+
+        } catch (err) {
+          console.error(err);
+          feedbackRecuperar.textContent = "Erro de ligação ao servidor.";
+          feedbackRecuperar.style.display = "block";
+        } finally {
+          btnEnviarRecuperar.disabled = false;
+          btnEnviarRecuperar.textContent = "Enviar Código";
+        }
+      });
+
+      // Passo 2: Confirmar código + nova password
+      btnConfirmarReset.addEventListener("click", async () => {
+        feedbackReset.style.display = "none";
+        sucessoReset.style.display = "none";
+
+        const codigo = codeReset.getValue().trim();
+        const novaPass = resetNovaPass.value.trim();
+        const confirmarPass = resetConfirmarPass.value.trim();
+
+        if (!codigo || codigo.length < 6 || !novaPass || !confirmarPass) {
+          feedbackReset.textContent = "Preenche todos os campos.";
+          feedbackReset.style.display = "block";
+          if (!codigo || codigo.length < 6) codeReset.setError();
+          return;
+        }
+
+        if (novaPass !== confirmarPass) {
+          feedbackReset.textContent = "As palavras-passe não coincidem.";
+          feedbackReset.style.display = "block";
+          return;
+        }
+
+        const r = checkPasswordStrength(novaPass);
+        if (!r.ok) {
+          feedbackReset.textContent = "Palavra-passe fraca. Falta: " + r.missing.join(", ");
+          feedbackReset.style.display = "block";
+          return;
+        }
+
+        btnConfirmarReset.disabled = true;
+        btnConfirmarReset.textContent = "A redefinir...";
+
+        try {
+          const res = await fetch("http://localhost:3000/api/reset-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: emailRecuperar,
+              codigo: codigo,
+              novaPassword: novaPass,
+            }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            feedbackReset.textContent = data.error || "Erro ao redefinir.";
+            feedbackReset.style.display = "block";
+            return;
+          }
+
+          sucessoReset.textContent = "Palavra-passe alterada com sucesso! A redirecionar...";
+          sucessoReset.style.display = "block";
+          btnConfirmarReset.style.display = "none";
+
+          setTimeout(() => {
+            divResetPassword.style.display = "none";
+            formLogin.style.display = "block";
+            btnConfirmarReset.style.display = "inline-block";
+            codeReset.clear();
+            resetNovaPass.value = "";
+            resetConfirmarPass.value = "";
+            resetStrength.textContent = "-";
+            resetStrength.className = "";
+            resetMissing.textContent = "";
+            strengthFill.style.width = "0%";
+            strengthFill.className = "strength-fill";
+          }, 2000);
+
+        } catch (err) {
+          console.error(err);
+          feedbackReset.textContent = "Erro de ligação ao servidor.";
+          feedbackReset.style.display = "block";
+        } finally {
+          btnConfirmarReset.disabled = false;
+          btnConfirmarReset.textContent = "Redefinir Palavra-passe";
+        }
+      });
+
+      // Limpar erros ao escrever nos inputs normais
+      [emailInput, passInput].forEach(input => {
+        input.addEventListener("input", () => {
+          if(input.classList.contains("input-erro")) {
+            input.classList.remove("input-erro");
+            feedbackGeral.style.display = "none";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

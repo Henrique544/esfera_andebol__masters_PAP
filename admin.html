@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Esfera Admin — Painel Completo</title>
+  <style>
+    :root {
+      --primary: #007bff;
+      --bg: #f4f6f9;
+      --card-bg: #ffffff;
+      --text: #333333;
+      --border: #e0e0e0;
+    }
+
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 20px; background: var(--bg); color: var(--text); }
+    
+    .access-denied { display: flex; align-items: center; justify-content: center; height: 80vh; text-align: center; }
+    .access-denied .card { padding: 40px; max-width: 420px; }
+    .access-denied h2 { margin: 0 0 8px; font-size: 22px; }
+    .access-denied p { color: #666; font-size: 14px; margin: 10px 0 20px; }
+
+    .header-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+    .header-bar h1 { margin: 0; font-size: 24px; }
+    
+    .tabs { display:flex; gap:10px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; overflow-x: auto; }
+    .tab-btn { padding: 8px 16px; border: none; background: transparent; cursor: pointer; font-size: 14px; font-weight: 500; color: #666; border-radius: 20px; transition: 0.2s; white-space: nowrap; }
+    .tab-btn:hover { background: #e9ecef; }
+    .tab-btn.active { background: #e7f1ff; color: var(--primary); font-weight: 600; }
+
+    .panel { display: none; animation: fadeIn 0.3s; }
+    .panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    .card { background: var(--card-bg); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid var(--border); margin-bottom: 20px; }
+    .table-responsive { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
+    th { background: #f8f9fa; padding: 12px 16px; text-align: left; font-weight: 600; color: #555; border-bottom: 1px solid var(--border); }
+    td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f1f7ff; }
+
+    .controls { display: flex; gap: 10px; padding: 16px; background: #fff; border-bottom: 1px solid var(--border); flex-wrap: wrap; align-items: center; }
+    input, select, textarea { padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; min-width: 200px; font-family: inherit; }
+    textarea { resize: vertical; min-height: 60px; }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,123,255,0.1); }
+    .count-label { margin-left: auto; font-size: 12px; color: #888; }
+
+    .btn { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-size: 12px; color: white; transition: 0.2s; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; }
+    .btn-primary { background: var(--primary); }
+    .btn-danger { background: #dc3545; }
+    .btn-success { background: #28a745; }
+    .btn-warning { background: #fd7e14; }
+    .btn-outline { background: transparent; border: 1px solid #ccc; color: #333; }
+    .btn-sm { padding: 4px 8px; font-size: 11px; }
+    .btn:hover { opacity: 0.9; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .btn-create { padding: 8px 16px; font-size: 13px; }
+
+    .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; display: inline-block; }
+    .bg-green { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .bg-red { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .bg-yellow { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+    .bg-blue { background: #cce5ff; color: #004085; border: 1px solid #b8daff; }
+    .bg-gray { background: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+
+    .mono { font-family: monospace; font-size: 12px; color: #555; }
+    .text-right { text-align: right; }
+    .bold { font-weight: 600; }
+    .loading { text-align: center; padding: 40px; color: var(--primary); }
+    .empty-msg { text-align: center; padding: 40px; color: #999; font-style: italic; }
+    .action-group { display: flex; gap: 4px; align-items: center; }
+
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(2px); }
+    .modal-overlay.open { display: flex; }
+    .modal { background: #fff; width: 650px; max-width: 92%; max-height: 90vh; border-radius: 10px; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 18px; }
+    .modal-body { padding: 20px; overflow-y: auto; }
+    .modal-footer { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; box-sizing: border-box; min-width: unset; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+    .toast { position: fixed; bottom: 24px; right: 24px; padding: 14px 24px; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 500; z-index: 2000; transform: translateY(100px); opacity: 0; transition: all 0.3s ease; box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast-success { background: #28a745; }
+    .toast-error { background: #dc3545; }
+
+    .confirm-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1100; backdrop-filter: blur(2px); }
+    .confirm-overlay.open { display: flex; }
+    .confirm-box { background: #fff; border-radius: 10px; padding: 28px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .confirm-box h3 { margin: 0 0 8px; font-size: 18px; }
+    .confirm-box p { color: #666; font-size: 14px; margin: 0 0 24px; }
+    .confirm-actions { display: flex; gap: 10px; justify-content: center; }
+    .confirm-actions .btn { padding: 10px 24px; font-size: 14px; }
+
+    .header-bar h1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-bar h1 img {
+  height: 80px;
+  width: auto;
+}
+  </style>
+</head>
+<body>
+
+  <div class="access-denied" id="accessDenied" style="display:none;">
+    <div class="card">
+      <h2>&#128274; Acesso Restrito</h2>
+      <p>Esta pagina e exclusiva para administradores.<br>Faz login com uma conta de administrador para continuar.</p>
+      <button class="btn btn-primary" onclick="window.location.href='login.html'" style="width:100%; padding:12px; font-size:15px">Ir para Login</button>
+    </div>
+  </div>
+
+  <div id="appWrapper" style="display:none;">
+    <div class="header-bar">
+      <h1><img src="esfera_admin_imagem.jpg"> Esfera <span style="color:var(--primary)">Admin</span></h1>
+      <div>
+        <span id="adminLabel" style="font-size:12px; color:#28a745; margin-right:10px; font-weight:600"></span>
+        <span id="lastUpdate" style="font-size:12px; color:#666; margin-right:10px"></span>
+        <button class="btn btn-primary" onclick="refreshAll()">Atualizar Tudo</button>
+        <button class="btn btn-danger" onclick="logout()" style="margin-left:6px">Sair</button>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-bottom: 25px;">
+      <div class="card" style="padding:20px; margin-bottom:0"><div style="font-size:24px; font-weight:bold" id="stat-users">&mdash;</div><div style="font-size:12px; color:#666; text-transform:uppercase">Utilizadores</div></div>
+      <div class="card" style="padding:20px; margin-bottom:0"><div style="font-size:24px; font-weight:bold" id="stat-tickets">&mdash;</div><div style="font-size:12px; color:#666; text-transform:uppercase">Bilhetes Vendidos</div></div>
+      <div class="card" style="padding:20px; margin-bottom:0"><div style="font-size:24px; font-weight:bold" id="stat-games">&mdash;</div><div style="font-size:12px; color:#666; text-transform:uppercase">Jogos</div></div>
+      <div class="card" style="padding:20px; border-left: 4px solid #28a745; margin-bottom:0"><div style="font-size:24px; font-weight:bold; color:#28a745" id="stat-money">&mdash;</div><div style="font-size:12px; color:#666; text-transform:uppercase">Receita Total</div></div>
+      <div class="card" style="padding:20px; margin-bottom:0"><div style="font-size:24px; font-weight:bold" id="stat-treinadores">&mdash;</div><div style="font-size:12px; color:#666; text-transform:uppercase">Treinadores</div></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('utilizadores')">Utilizadores</button>
+      <button class="tab-btn" onclick="switchTab('jogos')">Jogos</button>
+      <button class="tab-btn" onclick="switchTab('bilhetes')">Bilhetes</button>
+      <button class="tab-btn" onclick="switchTab('loja')">Loja</button>
+      <button class="tab-btn" onclick="switchTab('quotas')">Quotas</button>
+      <button class="tab-btn" onclick="switchTab('inscricoes')">Inscrições</button>
+      <button class="tab-btn" onclick="switchTab('treinadores')">Treinadores</button>
+      <button class="tab-btn" onclick="switchTab('produtos')">Produtos Loja</button>
+    </div>
+
+    <div id="panel-utilizadores" class="panel active">
+      <div class="card">
+        <div class="controls">
+          <input type="text" id="searchUser" placeholder="Pesquisar nome ou email..." onkeyup="debouncedLoad('utilizadores')">
+          <select id="filterUserType" onchange="loadUsers()"><option value="">Todos os tipos</option><option value="Premium">Premium</option><option value="Normal">Normal</option></select>
+          <span class="count-label" id="count-users"></span>
+        </div>
+        <div id="table-utilizadores" class="table-responsive"></div>
+      </div>
+    </div>
+
+    <div id="panel-jogos" class="panel">
+      <div class="card">
+        <div class="controls">
+          <input type="text" id="searchGame" placeholder="Pesquisar jogo..." onkeyup="filterLocalGames()">
+          <span class="count-label" id="count-jogos"></span>
+          <button class="btn btn-success btn-create" onclick="openGameForm()">+ Novo Jogo</button>
+        </div>
+        <div id="table-jogos" class="table-responsive"></div>
+      </div>
+    </div>
+
+    <div id="panel-bilhetes" class="panel">
+      <div class="card">
+        <div class="controls">
+          <input type="text" id="searchTicket" placeholder="Email do comprador..." onkeyup="debouncedLoad('bilhetes')">
+          <select id="filterTicketSetor" onchange="loadTickets()"><option value="">Todos os setores</option><option value="Bancada">Bancada</option><option value="Central">Central</option><option value="Zona VIP">Zona VIP</option></select>
+          <span class="count-label" id="count-bilhetes"></span>
+          <button class="btn btn-success btn-create" onclick="openTicketForm()">+ Novo Bilhete</button>
+        </div>
+        <div id="table-bilhetes" class="table-responsive"></div>
+      </div>
+    </div>
+
+    <div id="panel-loja" class="panel">
+      <div class="card">
+        <div class="controls">
+          <input type="text" id="searchShop" placeholder="Produto ou email..." onkeyup="debouncedLoad('loja')">
+          <span class="count-label" id="count-loja"></span>
+          <button class="btn btn-success btn-create" onclick="openShopForm()">+ Nova Venda</button>
+        </div>
+        <div id="table-loja" class="table-responsive"></div>
+      </div>
+    </div>
+
+    <div id="panel-quotas" class="panel">
+      <div class="card">
+        <div class="controls">
+          <input type="text" id="searchQuota" placeholder="Pesquisar email..." onkeyup="debouncedLoad('quotas')">
+          <select id="filterQuotaType" onchange="loadQuotas()"><option value="">Todos os tipos</option><option value="Premium">Premium</option><option value="Normal">Normal</option></select>
+          <span class="count-label" id="count-quotas"></span>
+          <button class="btn btn-success btn-create" onclick="openQuotaForm()">+ Nova Quota</button>
+        </div>
+        <div id="table-quotas" class="table-responsive"></div>
+      </div>
+    </div>
+
+    <div id="panel-inscricoes" class="panel">
+      <div class="card">
+        <div class="controls">
+          <input type="text" id="searchReg" placeholder="Nome atleta ou email..." onkeyup="debouncedLoad('inscricoes')">
+          <select id="filterRegStatus" onchange="loadRegistrations()"><option value="">Todos os estados</option><option value="Pendente">Pendente</option><option value="Aprovada">Aprovada</option><option value="Rejeitada">Rejeitada</option></select>
+          <span class="count-label" id="count-inscricoes"></span>
+          <button class="btn btn-success btn-create" onclick="openRegForm()">+ Nova Inscricao</button>
+        </div>
+        <div id="table-inscricoes" class="table-responsive"></div>
+      </div>
+    </div>
+
+    <div id="panel-treinadores" class="panel">
+      <div class="card">
+        <div class="controls">
+          <input type="text" id="searchTreinador" placeholder="Nome, email ou escalão..." onkeyup="debouncedLoad('treinadores')">
+          <select id="filterTreinadorEstado" onchange="loadTreinadores()"><option value="">Todos os estados</option><option value="Ativo">Ativo</option><option value="Inativo">Inativo</option></select>
+          <span class="count-label" id="count-treinadores"></span>
+          <button class="btn btn-success btn-create" onclick="openTreinadorForm()">+ Novo Treinador</button>
+        </div>
+        <div id="table-treinadores" class="table-responsive"></div>
+      </div>
+    </div>
+
+    <div id="panel-produtos" class="panel">
+      <div class="card">
+        <div class="controls">
+          <input type="text" id="searchProduto" placeholder="Nome ou SKU..." onkeyup="debouncedLoad('produtos')">
+          <select id="filterProdutoCategoria" onchange="loadProdutos()">
+            <option value="">Todas as categorias</option>
+            <option value="loja1">Equipamentos</option>
+            <option value="loja2">Sweats</option>
+            <option value="loja3">Polos</option>
+            <option value="loja4">Acessórios</option>
+          </select>
+          <span class="count-label" id="count-produtos"></span>
+          <button class="btn btn-success btn-create" onclick="openProdutoForm()">+ Novo Produto</button>
+        </div>
+        <div id="table-produtos" class="table-responsive"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModalDirect()">
+    <div class="modal">
+      <div class="modal-header"><span id="modalTitle">Detalhes</span><button class="btn btn-outline" style="border:none; font-size:18px" onclick="closeModalDirect()">&times;</button></div>
+      <div class="modal-body" id="modalContent"></div>
+      <div class="modal-footer" id="modalFooter"><button class="btn btn-outline" onclick="closeModalDirect()">Fechar</button></div>
+    </div>
+  </div>
+
+  <div class="confirm-overlay" id="confirmOverlay" onclick="if(event.target===this)closeConfirm()">
+    <div class="confirm-box">
+      <h3 id="confirmTitle">Confirmar</h3>
+      <p id="confirmMsg">Tens a certeza?</p>
+      <div class="confirm-actions">
+        <button class="btn btn-outline" onclick="closeConfirm()">Cancelar</button>
+        <button class="btn btn-danger" id="confirmBtn" onclick="executeConfirm()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const BASE_URL = "http://localhost:3000";
+    let _debounceTimer;
+    let _gamesCache = [];
+    let _confirmCallback = null;
+    let _usersData = [];
+    let _ticketsData = [];
+    let _shopData = [];
+    let _quotasData = [];
+    let _regData = [];
+    let _treinadoresData = [];
+
+    function showToast(msg, type) {
+      type = type || 'success';
+      var t = document.getElementById('toast');
+      t.className = 'toast toast-' + type + ' show';
+      t.innerText = msg;
+      setTimeout(function(){ t.classList.remove('show'); }, 3000);
+    }
+
+    function showConfirm(title, msg, btnText, btnClass, cb) {
+      document.getElementById('confirmTitle').innerText = title;
+      document.getElementById('confirmMsg').innerText = msg;
+      var btn = document.getElementById('confirmBtn');
+      btn.innerText = btnText;
+      btn.className = 'btn ' + btnClass;
+      _confirmCallback = cb;
+      document.getElementById('confirmOverlay').classList.add('open');
+    }
+    function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('open'); _confirmCallback = null; }
+    function executeConfirm() { if (_confirmCallback) _confirmCallback(); closeConfirm(); }
+
+    function checkAdminAccess() {
+      var isAdmin = localStorage.getItem('esfera_admin') === 'true';
+      if (isAdmin) {
+        document.getElementById('accessDenied').style.display = 'none';
+        document.getElementById('appWrapper').style.display = 'block';
+        document.getElementById('adminLabel').innerText = '\u{1F7E2} ' + (localStorage.getItem('adminNome') || 'Admin');
+        initApp();
+      } else {
+        document.getElementById('accessDenied').style.display = 'flex';
+        document.getElementById('appWrapper').style.display = 'none';
+      }
+    }
+    function logout() {
+      localStorage.removeItem('esfera_admin');
+      localStorage.removeItem('adminNome');
+      localStorage.removeItem('emailSocio');
+      window.location.href = 'login.html?logout=1';
+    }
+    function initApp() { loadStats(); loadUsers(); }
+
+    var fmtMoney = function(v) { return new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(v || 0); };
+    var fmtDate = function(d) { return d ? new Date(d).toLocaleString('pt-PT', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) : "\u2014"; };
+    var getMonthName = function(n) { return ["","Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"][n] || n; };
+
+    function esc(str) {
+      if (str === null || str === undefined) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    async function fetchAPI(endpoint, options) {
+      options = options || {};
+      try {
+        var res = await fetch(BASE_URL + endpoint, options);
+        if (!res.ok) {
+          var errBody = await res.json().catch(function(){ return {}; });
+          console.error("API Error:", errBody.error || res.status);
+          return null;
+        }
+        return await res.json();
+      } catch (err) {
+        console.error("Fetch Error:", err);
+        return null;
+      }
+    }
+
+    function openModal(title, contentHTML, footerHTML) {
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalContent').innerHTML = contentHTML;
+      document.getElementById('modalFooter').innerHTML = footerHTML || '<button class="btn btn-outline" onclick="closeModalDirect()">Fechar</button>';
+      document.getElementById('modalOverlay').classList.add('open');
+    }
+    function closeModalDirect() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+      event.target.classList.add('active');
+      document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+      document.getElementById('panel-' + tabId).classList.add('active');
+      var loaders = { utilizadores: loadUsers, jogos: loadGames, bilhetes: loadTickets, loja: loadShop, quotas: loadQuotas, inscricoes: loadRegistrations, treinadores: loadTreinadores, produtos: loadProdutos };
+      if (loaders[tabId]) loaders[tabId]();
+    }
+
+    async function loadStats() {
+      var data = await fetchAPI('/api/admin/dashboard');
+      if (data && data.contagens) {
+        document.getElementById('stat-users').innerText = data.contagens.users || 0;
+        document.getElementById('stat-tickets').innerText = data.contagens.tickets || 0;
+        document.getElementById('stat-games').innerText = data.contagens.games || 0;
+        document.getElementById('stat-treinadores').innerText = data.contagens.treinadores || 0;
+        document.getElementById('stat-money').innerText = fmtMoney(data.receita && data.receita.total);
+        document.getElementById('lastUpdate').innerText = "Ultima atualizacao: " + new Date().toLocaleTimeString();
+      }
+    }
+
+    async function doSave(btnId, promise, msg, reloadFn) {
+      var btn = document.getElementById(btnId);
+      if (btn) { btn.disabled = true; btn.innerText = 'A guardar...'; }
+      var res = await promise;
+      if (res) {
+        closeModalDirect();
+        showToast(msg);
+        reloadFn();
+        loadStats();
+      } else {
+        showToast('Erro ao guardar. Verifica os campos.', 'error');
+        if (btn) { btn.disabled = false; btn.innerText = 'Guardar'; }
+      }
+    }
+
+    function confirmDelete(endpoint, label, reloadFn) {
+      showConfirm('Eliminar Registo', 'Tens a certeza que queres eliminar "' + label + '"? Esta acao e irreversivel.', 'Eliminar', 'btn-danger', async function() {
+        var res = await fetchAPI(endpoint, { method: 'DELETE' });
+        if (res) { showToast('Registo eliminado!'); reloadFn(); loadStats(); }
+        else showToast('Erro ao eliminar.', 'error');
+      });
+    }
+
+    // ═══ 1. UTILIZADORES ═══
+    async function loadUsers() {
+      var container = document.getElementById('table-utilizadores');
+      container.innerHTML = '<div class="loading">A carregar utilizadores...</div>';
+      var search = document.getElementById('searchUser').value;
+      var type = document.getElementById('filterUserType').value;
+      var data = await fetchAPI('/api/admin/utilizadores?search=' + encodeURIComponent(search) + '&tipo=' + encodeURIComponent(type));
+      if (!data || !data.data || !data.data.length) {
+        container.innerHTML = '<div class="empty-msg">Nenhum utilizador encontrado.</div>';
+        document.getElementById('count-users').innerText = "0";
+        return;
+      }
+      _usersData = data.data;
+      document.getElementById('count-users').innerText = data.data.length + ' registos';
+      var html = '<table><thead><tr><th>Nome</th><th>Email</th><th>N Socio</th><th>Tipo</th><th>Telefone</th><th style="text-align:center">Acoes</th></tr></thead><tbody>';
+      data.data.forEach(function(u, i) {
+        var badge = u.tipo === 'Premium' ? 'bg-yellow' : u.tipo === 'Normal' ? 'bg-blue' : 'bg-gray';
+        html += '<tr><td><b>' + esc(u.nome) + '</b></td><td class="mono">' + esc(u.email) + '</td><td class="mono">' + (u.numeroSocio || '\u2014') + '</td><td><span class="badge ' + badge + '">' + esc(u.tipo) + '</span></td><td class="mono">' + (u.telefone || '\u2014') + '</td><td><div class="action-group"><button class="btn btn-primary btn-sm" onclick="openModalUser(\'' + u._id + '\')">&#128065;</button><button class="btn btn-warning btn-sm" onclick="openUserEditForm(' + i + ')">&#9998;</button><button class="btn btn-danger btn-sm" onclick="confirmDelete(\'/api/admin/utilizadores/' + u._id + '\',\'' + esc(u.nome).replace(/'/g, "\\'") + '\',loadUsers)">&#128465;</button></div></td></tr>';
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function openUserEditForm(idx) {
+      var u = _usersData[idx];
+      if (!u) return;
+      openModal('Editar Utilizador',
+        '<div class="form-row"><div class="form-group"><label>Nome</label><input id="f-nome" value="' + esc(u.nome) + '"></div><div class="form-group"><label>Telefone</label><input id="f-telefone" value="' + esc(u.telefone) + '"></div></div>' +
+        '<div class="form-row"><div class="form-group"><label>Tipo</label><select id="f-tipo"><option value="Adepto"' + (u.tipo==='Adepto'?' selected':'') + '>Adepto</option><option value="Normal"' + (u.tipo==='Normal'?' selected':'') + '>Normal</option><option value="Premium"' + (u.tipo==='Premium'?' selected':'') + '>Premium</option></select></div><div class="form-group"><label>N Socio</label><input id="f-nsocio" type="number" value="' + (u.numeroSocio||0) + '"></div></div>',
+        '<button class="btn btn-outline" onclick="closeModalDirect()">Cancelar</button><button class="btn btn-warning" id="save-btn" onclick="doSaveUser(\'' + u._id + '\')">Guardar</button>'
+      );
+    }
+
+    async function doSaveUser(id) {
+      await doSave('save-btn',
+        fetchAPI('/api/admin/utilizadores/' + id, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({
+          nome: document.getElementById('f-nome').value,
+          telefone: document.getElementById('f-telefone').value,
+          tipo: document.getElementById('f-tipo').value,
+          numeroSocio: document.getElementById('f-nsocio').value,
+        })}),
+        'Utilizador atualizado!', loadUsers
+      );
+    }
+
+    async function openModalUser(id) {
+      openModal('Detalhes do Utilizador', '<div class="loading">A carregar...</div>');
+      var data = await fetchAPI('/api/admin/utilizadores/' + id);
+      if (data && data.user) {
+        var u = data.user;
+        var badge = u.tipo==='Premium'?'bg-yellow':u.tipo==='Normal'?'bg-blue':'bg-gray';
+        document.getElementById('modalContent').innerHTML =
+          '<div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:14px">' +
+          '<div><label class="mono" style="font-size:11px; color:#888">NOME</label><div style="font-weight:600">' + esc(u.nome) + '</div></div>' +
+          '<div><label class="mono" style="font-size:11px; color:#888">EMAIL</label><div>' + esc(u.email) + '</div></div>' +
+          '<div><label class="mono" style="font-size:11px; color:#888">TELEFONE</label><div>' + (u.telefone || '\u2014') + '</div></div>' +
+          '<div><label class="mono" style="font-size:11px; color:#888">N SOCIO</label><div>' + (u.numeroSocio || '\u2014') + '</div></div>' +
+          '<div><label class="mono" style="font-size:11px; color:#888">TIPO</label><div><span class="badge ' + badge + '">' + esc(u.tipo) + '</span></div></div>' +
+          '<div><label class="mono" style="font-size:11px; color:#888">MORADA</label><div>' + (u.morada || '\u2014') + '</div></div>' +
+          '<div><label class="mono" style="font-size:11px; color:#888">NACIONALIDADE</label><div>' + (u.nacionalidade || '\u2014') + '</div></div>' +
+          '<div><label class="mono" style="font-size:11px; color:#888">GENERO</label><div>' + (u.genero || '\u2014') + '</div></div>' +
+          '<div><label class="mono" style="font-size:11px; color:#888">SOCIO DESDE</label><div>' + (u.socioDesde || '\u2014') + '</div></div>' +
+          '<div><label class="mono" style="font-size:11px; color:#888">CRIADO EM</label><div>' + fmtDate(u.createdAt) + '</div></div>' +
+          '</div>';
+      } else {
+        document.getElementById('modalContent').innerHTML = '<div class="empty-msg">Erro ao carregar dados.</div>';
+      }
+    }
+
+    // ═══ 2. JOGOS ═══
+    async function loadGames() {
+      var container = document.getElementById('table-jogos');
+      if (!_gamesCache.length) container.innerHTML = '<div class="loading">A carregar jogos...</div>';
+      var data = await fetchAPI('/api/jogos');
+      if (data && data.jogos) { _gamesCache = data.jogos; filterLocalGames(); }
+      else container.innerHTML = '<div class="empty-msg">Erro ao carregar jogos.</div>';
+    }
+
+    function filterLocalGames() {
+      var term = document.getElementById('searchGame').value.toLowerCase();
+      var filtered = _gamesCache.filter(function(g) {
+        return (g.titulo||'').toLowerCase().includes(term) || (g.local||'').toLowerCase().includes(term) || (g.adversario||'').toLowerCase().includes(term);
+      });
+      var container = document.getElementById('table-jogos');
+      document.getElementById('count-jogos').innerText = filtered.length + ' registos';
+      if (!filtered.length) { container.innerHTML = '<div class="empty-msg">Sem resultados.</div>'; return; }
+      var html = '<table><thead><tr><th>Jogo</th><th>Data</th><th>Hora</th><th>Local</th><th>Competicao</th><th>Resultado</th><th>Status</th><th style="text-align:center">Acoes</th></tr></thead><tbody>';
+      filtered.forEach(function(g) {
+        var badge = g.status === 'vitoria' ? 'bg-green' : g.status === 'derrota' ? 'bg-red' : g.status === 'agendado' ? 'bg-gray' : 'bg-yellow';
+        var realIdx = _gamesCache.indexOf(g);
+        html += '<tr><td><b>' + esc(g.titulo) + '</b></td><td class="mono">' + (g.data||'\u2014') + '</td><td class="mono">' + (g.hora||'\u2014') + '</td><td>' + esc(g.local) + '</td><td>' + esc(g.competicao) + '</td><td class="mono bold">' + (g.resultado||'\u2014') + '</td><td><span class="badge ' + badge + '">' + esc(g.status) + '</span></td><td><div class="action-group"><button class="btn btn-warning btn-sm" onclick="openGameForm(' + realIdx + ')">&#9998;</button><button class="btn btn-danger btn-sm" onclick="confirmDelete(\'/api/admin/jogos/' + g._id + '\',\'' + esc(g.titulo).replace(/'/g,"\\'") + '\',loadGames)">&#128465;</button></div></td></tr>';
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function openGameForm(idx) {
+      var isEdit = (idx !== undefined && idx !== null && idx !== false);
+      var g = isEdit ? _gamesCache[idx] : {};
+      openModal(isEdit ? 'Editar Jogo' : 'Novo Jogo',
+        '<div class="form-group"><label>Titulo *</label><input id="f-titulo" value="' + esc(g.titulo) + '" placeholder="Ex: Esfera vs Rival FC"></div>' +
+        '<div class="form-row"><div class="form-group"><label>Adversario *</label><input id="f-adversario" value="' + esc(g.adversario) + '" placeholder="Nome do adversario"></div><div class="form-group"><label>Competicao *</label><input id="f-competicao" value="' + esc(g.competicao) + '" placeholder="Liga, Taca..."></div></div>' +
+        '<div class="form-row-3"><div class="form-group"><label>Data (AAAA-MM-DD) *</label><input id="f-data" type="date" value="' + (g.data||'') + '"></div><div class="form-group"><label>Hora *</label><input id="f-hora" type="time" value="' + (g.hora||'') + '"></div><div class="form-group"><label>Local *</label><input id="f-local" value="' + esc(g.local) + '" placeholder="Pavilhao..."></div></div>' +
+        '<div class="form-row-3"><div class="form-group"><label>Resultado</label><input id="f-resultado" value="' + esc(g.resultado) + '" placeholder="32 - 28"></div><div class="form-group"><label>Pontos</label><input id="f-pontos" value="' + esc(g.pontos) + '" placeholder="2, 1, 0"></div><div class="form-group"><label>Status</label><select id="f-status"><option value="agendado"' + (g.status==='agendado'?' selected':'') + '>Agendado</option><option value="vitoria"' + (g.status==='vitoria'?' selected':'') + '>Vitoria</option><option value="derrota"' + (g.status==='derrota'?' selected':'') + '>Derrota</option><option value="empate"' + (g.status==='empate'?' selected':'') + '>Empate</option></select></div></div>',
+        '<button class="btn btn-outline" onclick="closeModalDirect()">Cancelar</button><button class="btn ' + (isEdit?'btn-warning':'btn-success') + '" id="save-btn" onclick="doSaveGame(' + (isEdit ? "'" + g._id + "'" : 'null') + ')">' + (isEdit?'Guardar':'Criar') + '</button>'
+      );
+    }
+
+    async function doSaveGame(id) {
+      var isEdit = !!id;
+      await doSave('save-btn',
+        fetchAPI(isEdit ? '/api/admin/jogos/' + id : '/api/admin/jogos', {
+          method: isEdit ? 'PUT' : 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            titulo: document.getElementById('f-titulo').value,
+            adversario: document.getElementById('f-adversario').value,
+            competicao: document.getElementById('f-competicao').value,
+            data: document.getElementById('f-data').value,
+            hora: document.getElementById('f-hora').value,
+            local: document.getElementById('f-local').value,
+            resultado: document.getElementById('f-resultado').value,
+            pontos: document.getElementById('f-pontos').value,
+            status: document.getElementById('f-status').value,
+          })
+        }),
+        isEdit ? 'Jogo atualizado!' : 'Jogo criado!', loadGames
+      );
+    }
+
+    // ═══ 3. BILHETES ═══
+    async function loadTickets() {
+      var container = document.getElementById('table-bilhetes');
+      container.innerHTML = '<div class="loading">A carregar bilhetes...</div>';
+      var search = document.getElementById('searchTicket').value;
+      var setor = document.getElementById('filterTicketSetor').value;
+      var data = await fetchAPI('/api/admin/bilhetes?email=' + encodeURIComponent(search) + '&setor=' + encodeURIComponent(setor));
+      if (!data || !data.data || !data.data.length) {
+        container.innerHTML = '<div class="empty-msg">Nenhum bilhete vendido.</div>';
+        document.getElementById('count-bilhetes').innerText = "0";
+        return;
+      }
+      _ticketsData = data.data;
+      document.getElementById('count-bilhetes').innerText = data.data.length + ' registos';
+      var total = 0;
+      var html = '<table><thead><tr><th>Email</th><th>Jogo</th><th>Setor</th><th>Qtd</th><th>Valor</th><th>Data</th><th style="text-align:center">Acoes</th></tr></thead><tbody>';
+      data.data.forEach(function(t, i) {
+        total += (t.precoTotal || 0);
+        html += '<tr><td class="mono">' + esc(t.email) + '</td><td>' + esc(t.gameSlug) + '</td><td>' + esc(t.setor) + '</td><td>' + t.quantidade + '</td><td class="mono text-right bold">' + fmtMoney(t.precoTotal) + '</td><td class="mono">' + (t.dataCompra||'\u2014') + '</td><td><div class="action-group"><button class="btn btn-warning btn-sm" onclick="openTicketForm(' + i + ')">&#9998;</button><button class="btn btn-danger btn-sm" onclick="confirmDelete(\'/api/admin/bilhetes/' + t._id + '\',\'' + esc(t.email).replace(/'/g,"\\'") + '\',loadTickets)">&#128465;</button></div></td></tr>';
+      });
+      html += '<tr style="background:#f8f9fa; font-weight:bold"><td colspan="4" class="text-right">TOTAL:</td><td class="mono text-right" style="color:#28a745">' + fmtMoney(total) + '</td><td></td><td></td></tr>';
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function openTicketForm(idx) {
+      var isEdit = (idx !== undefined && idx !== null && idx !== false);
+      var t = isEdit ? _ticketsData[idx] : {};
+      openModal(isEdit ? 'Editar Bilhete' : 'Novo Bilhete',
+        '<div class="form-row"><div class="form-group"><label>Email Comprador *</label><input id="f-email" value="' + esc(t.email) + '" placeholder="email@exemplo.com" ' + (isEdit?'disabled':'') + '></div><div class="form-group"><label>Jogo (slug) *</label><input id="f-slug" value="' + esc(t.gameSlug) + '" placeholder="esfera-vs-rival-2026-01-01" ' + (isEdit?'disabled':'') + '></div></div>' +
+        '<div class="form-row-3"><div class="form-group"><label>Setor</label><select id="f-setor"><option value="Bancada"' + (t.setor==='Bancada'?' selected':'') + '>Bancada</option><option value="Central"' + (t.setor==='Central'?' selected':'') + '>Central</option><option value="Zona VIP"' + (t.setor==='Zona VIP'?' selected':'') + '>Zona VIP</option></select></div><div class="form-group"><label>Quantidade</label><input id="f-qtd" type="number" min="1" max="10" value="' + (t.quantidade||1) + '"></div><div class="form-group"><label>Preco Total</label><input id="f-preco" type="number" step="0.01" value="' + (t.precoTotal||'') + '"></div></div>',
+        '<button class="btn btn-outline" onclick="closeModalDirect()">Cancelar</button><button class="btn ' + (isEdit?'btn-warning':'btn-success') + '" id="save-btn" onclick="doSaveTicket(' + (isEdit ? "'" + t._id + "'" : 'null') + ')">' + (isEdit?'Guardar':'Criar') + '</button>'
+      );
+    }
+
+    async function doSaveTicket(id) {
+      var isEdit = !!id;
+      await doSave('save-btn',
+        fetchAPI(isEdit ? '/api/admin/bilhetes/' + id : '/api/admin/bilhetes', {
+          method: isEdit ? 'PUT' : 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            email: document.getElementById('f-email').value,
+            gameSlug: document.getElementById('f-slug').value,
+            setor: document.getElementById('f-setor').value,
+            quantidade: parseInt(document.getElementById('f-qtd').value),
+            precoTotal: parseFloat(document.getElementById('f-preco').value),
+          })
+        }),
+        isEdit ? 'Bilhete atualizado!' : 'Bilhete criado!', loadTickets
+      );
+    }
+
+    // ═══ 4. LOJA ═══
+    async function loadShop() {
+      var container = document.getElementById('table-loja');
+      container.innerHTML = '<div class="loading">A carregar vendas da loja...</div>';
+      var search = document.getElementById('searchShop').value;
+      var data = await fetchAPI('/api/admin/loja?email=' + encodeURIComponent(search));
+      if (!data || !data.data || !data.data.length) {
+        container.innerHTML = '<div class="empty-msg">Nenhuma compra de loja registada.</div>';
+        document.getElementById('count-loja').innerText = "0";
+        return;
+      }
+      _shopData = data.data;
+      document.getElementById('count-loja').innerText = data.data.length + ' registos';
+      var total = 0;
+      var html = '<table><thead><tr><th>Comprador</th><th>Produto</th><th>SKU</th><th>Qtd</th><th>Total</th><th>Data</th><th style="text-align:center">Acoes</th></tr></thead><tbody>';
+      data.data.forEach(function(item, i) {
+        total += (item.total || 0);
+        html += '<tr><td class="mono">' + esc(item.email) + '</td><td><b>' + esc(item.produto) + '</b></td><td class="mono">' + (item.sku||'-') + '</td><td>' + item.quantidade + '</td><td class="mono text-right bold">' + fmtMoney(item.total) + '</td><td class="mono">' + (item.dataCompra||'\u2014') + '</td><td><div class="action-group"><button class="btn btn-warning btn-sm" onclick="openShopForm(' + i + ')">&#9998;</button><button class="btn btn-danger btn-sm" onclick="confirmDelete(\'/api/admin/loja/' + item._id + '\',\'' + esc(item.produto).replace(/'/g,"\\'") + '\',loadShop)">&#128465;</button></div></td></tr>';
+      });
+      html += '<tr style="background:#f8f9fa; font-weight:bold"><td colspan="4" class="text-right">TOTAL:</td><td class="mono text-right" style="color:#28a745">' + fmtMoney(total) + '</td><td></td><td></td></tr>';
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function openShopForm(idx) {
+      var isEdit = (idx !== undefined && idx !== null && idx !== false);
+      var s = isEdit ? _shopData[idx] : {};
+      openModal(isEdit ? 'Editar Venda' : 'Nova Venda',
+        '<div class="form-row"><div class="form-group"><label>Email Comprador *</label><input id="f-email" value="' + esc(s.email) + '" placeholder="email@exemplo.com"></div><div class="form-group"><label>Produto *</label><input id="f-produto" value="' + esc(s.produto) + '" placeholder="Nome do produto"></div></div>' +
+        '<div class="form-row-3"><div class="form-group"><label>SKU</label><input id="f-sku" value="' + esc(s.sku) + '" placeholder="EQ-001"></div><div class="form-group"><label>Quantidade</label><input id="f-qtd" type="number" min="1" value="' + (s.quantidade||1) + '"></div><div class="form-group"><label>Total</label><input id="f-total" type="number" step="0.01" value="' + (s.total||'') + '"></div></div>',
+        '<button class="btn btn-outline" onclick="closeModalDirect()">Cancelar</button><button class="btn ' + (isEdit?'btn-warning':'btn-success') + '" id="save-btn" onclick="doSaveShop(' + (isEdit ? "'" + s._id + "'" : 'null') + ')">' + (isEdit?'Guardar':'Criar') + '</button>'
+      );
+    }
+
+    async function doSaveShop(id) {
+      var isEdit = !!id;
+      await doSave('save-btn',
+        fetchAPI(isEdit ? '/api/admin/loja/' + id : '/api/admin/loja', {
+          method: isEdit ? 'PUT' : 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            email: document.getElementById('f-email').value,
+            produto: document.getElementById('f-produto').value,
+            sku: document.getElementById('f-sku').value,
+            quantidade: parseInt(document.getElementById('f-qtd').value),
+            total: parseFloat(document.getElementById('f-total').value),
+          })
+        }),
+        isEdit ? 'Venda atualizada!' : 'Venda registada!', loadShop
+      );
+    }
+
+    // ═══ 5. QUOTAS ═══
+    async function loadQuotas() {
+      var container = document.getElementById('table-quotas');
+      container.innerHTML = '<div class="loading">A carregar quotas...</div>';
+      var search = document.getElementById('searchQuota').value;
+      var type = document.getElementById('filterQuotaType').value;
+      var data = await fetchAPI('/api/admin/quotas?email=' + encodeURIComponent(search) + '&tipo=' + encodeURIComponent(type));
+      if (!data || !data.data || !data.data.length) {
+        container.innerHTML = '<div class="empty-msg">Nenhuma quota encontrada.</div>';
+        document.getElementById('count-quotas').innerText = "0";
+        return;
+      }
+      _quotasData = data.data;
+      document.getElementById('count-quotas').innerText = data.data.length + ' registos';
+      var html = '<table><thead><tr><th>Socio (Email)</th><th>Mes Ref.</th><th>Tipo</th><th>Valor</th><th>Pago Em</th><th style="text-align:center">Acoes</th></tr></thead><tbody>';
+      data.data.forEach(function(q, i) {
+        var badge = q.tipo === 'Premium' ? 'bg-yellow' : 'bg-blue';
+        html += '<tr><td class="mono">' + esc(q.email) + '</td><td>' + getMonthName(q.mes) + ' / ' + q.ano + '</td><td><span class="badge ' + badge + '">' + esc(q.tipo) + '</span></td><td class="mono text-right">' + fmtMoney(q.valor) + '</td><td class="mono">' + (q.dataPagamento||'\u2014') + '</td><td><div class="action-group"><button class="btn btn-warning btn-sm" onclick="openQuotaForm(' + i + ')">&#9998;</button><button class="btn btn-danger btn-sm" onclick="confirmDelete(\'/api/admin/quotas/' + q._id + '\',\'' + esc(q.email).replace(/'/g,"\\'") + '\',loadQuotas)">&#128465;</button></div></td></tr>';
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function openQuotaForm(idx) {
+      var isEdit = (idx !== undefined && idx !== null && idx !== false);
+      var q = isEdit ? _quotasData[idx] : {};
+      var curMonth = q.mes || (new Date().getMonth() + 1);
+      var monthOpts = '';
+      for (var m = 1; m <= 12; m++) monthOpts += '<option value="' + m + '"' + (curMonth == m ? ' selected' : '') + '>' + getMonthName(m) + '</option>';
+      openModal(isEdit ? 'Editar Quota' : 'Nova Quota',
+        '<div class="form-row"><div class="form-group"><label>Email Socio *</label><input id="f-email" value="' + esc(q.email) + '" placeholder="email@exemplo.com" ' + (isEdit?'disabled':'') + '></div><div class="form-group"><label>Tipo</label><select id="f-tipo"><option value="Normal"' + (q.tipo==='Normal'?' selected':'') + '>Normal</option><option value="Premium"' + (q.tipo==='Premium'?' selected':'') + '>Premium</option></select></div></div>' +
+        '<div class="form-row-3"><div class="form-group"><label>Mes</label><select id="f-mes">' + monthOpts + '</select></div><div class="form-group"><label>Ano</label><input id="f-ano" type="number" value="' + (q.ano || new Date().getFullYear()) + '"></div><div class="form-group"><label>Valor</label><input id="f-valor" type="number" step="0.01" value="' + (q.valor||'') + '"></div></div>',
+        '<button class="btn btn-outline" onclick="closeModalDirect()">Cancelar</button><button class="btn ' + (isEdit?'btn-warning':'btn-success') + '" id="save-btn" onclick="doSaveQuota(' + (isEdit ? "'" + q._id + "'" : 'null') + ')">' + (isEdit?'Guardar':'Criar') + '</button>'
+      );
+    }
+
+    async function doSaveQuota(id) {
+      var isEdit = !!id;
+      await doSave('save-btn',
+        fetchAPI(isEdit ? '/api/admin/quotas/' + id : '/api/admin/quotas', {
+          method: isEdit ? 'PUT' : 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            email: document.getElementById('f-email').value,
+            tipo: document.getElementById('f-tipo').value,
+            mes: parseInt(document.getElementById('f-mes').value),
+            ano: parseInt(document.getElementById('f-ano').value),
+            valor: parseFloat(document.getElementById('f-valor').value),
+          })
+        }),
+        isEdit ? 'Quota atualizada!' : 'Quota registada!', loadQuotas
+      );
+    }
+
+    // ═══ 6. INSCRICOES ═══
+    async function loadRegistrations() {
+      var container = document.getElementById('table-inscricoes');
+      container.innerHTML = '<div class="loading">A carregar inscricoes...</div>';
+      var search = document.getElementById('searchReg').value;
+      var status = document.getElementById('filterRegStatus').value;
+      var data = await fetchAPI('/api/admin/inscricoes?email=' + encodeURIComponent(search) + '&estado=' + encodeURIComponent(status));
+      if (!data || !data.data || !data.data.length) {
+        container.innerHTML = '<div class="empty-msg">Nenhuma inscricao encontrada.</div>';
+        document.getElementById('count-inscricoes').innerText = "0";
+        return;
+      }
+      _regData = data.data;
+      document.getElementById('count-inscricoes').innerText = data.data.length + ' registos';
+      var html = '<table><thead><tr><th>Responsavel</th><th>Atleta</th><th>Escalao</th><th>Mensalidade</th><th>Estado</th><th>Data</th><th style="text-align:center">Acoes</th></tr></thead><tbody>';
+      data.data.forEach(function(r, i) {
+        var badge = r.estado === 'Aprovada' ? 'bg-green' : r.estado === 'Rejeitada' ? 'bg-red' : 'bg-yellow';
+        var quickBtns = '';
+        if (r.estado !== 'Aprovada') quickBtns += '<button class="btn btn-success btn-sm" onclick="updateRegStatus(\'' + r._id + '\',\'Aprovada\')" title="Aprovar">&#10003;</button>';
+        if (r.estado !== 'Rejeitada') quickBtns += '<button class="btn btn-danger btn-sm" onclick="updateRegStatus(\'' + r._id + '\',\'Rejeitada\')" title="Rejeitar">&#10007;</button>';
+        html += '<tr><td>' + esc(r.nome) + '<br><span class="mono" style="font-size:11px">' + esc(r.email) + '</span></td><td>' + esc(r.nome_atleta) + '</td><td>' + esc(r.escalao) + '</td><td class="mono">' + esc(r.mensalidade) + '</td><td><span class="badge ' + badge + '">' + esc(r.estado) + '</span></td><td class="mono">' + (r.dataInscricao||'\u2014') + '</td><td><div class="action-group">' + quickBtns + '<button class="btn btn-warning btn-sm" onclick="openRegForm(' + i + ')">&#9998;</button><button class="btn btn-danger btn-sm" onclick="confirmDelete(\'/api/admin/inscricoes/' + r._id + '\',\'' + esc(r.nome_atleta).replace(/'/g,"\\'") + '\',loadRegistrations)">&#128465;</button></div></td></tr>';
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function openRegForm(idx) {
+      var isEdit = (idx !== undefined && idx !== null && idx !== false);
+      var r = isEdit ? _regData[idx] : {};
+      openModal(isEdit ? 'Editar Inscricao' : 'Nova Inscricao',
+        '<div class="form-row"><div class="form-group"><label>Nome Responsavel *</label><input id="f-nome" value="' + esc(r.nome) + '" placeholder="Nome completo"></div><div class="form-group"><label>Email *</label><input id="f-email" type="email" value="' + esc(r.email) + '" placeholder="email@exemplo.com" ' + (isEdit?'disabled':'') + '></div></div>' +
+        '<div class="form-row-3"><div class="form-group"><label>Nome Atleta *</label><input id="f-atleta" value="' + esc(r.nome_atleta) + '" placeholder="Nome do atleta"></div><div class="form-group"><label>Escalao *</label><input id="f-escalao" value="' + esc(r.escalao) + '" placeholder="Sub-15, Senior..."></div><div class="form-group"><label>Mensalidade</label><input id="f-mensalidade" value="' + esc(r.mensalidade) + '" placeholder="25.00"></div></div>' +
+        '<div class="form-group"><label>Estado</label><select id="f-estado"><option value="Pendente"' + (r.estado==='Pendente'?' selected':'') + '>Pendente</option><option value="Aprovada"' + (r.estado==='Aprovada'?' selected':'') + '>Aprovada</option><option value="Rejeitada"' + (r.estado==='Rejeitada'?' selected':'') + '>Rejeitada</option></select></div>',
+        '<button class="btn btn-outline" onclick="closeModalDirect()">Cancelar</button><button class="btn ' + (isEdit?'btn-warning':'btn-success') + '" id="save-btn" onclick="doSaveReg(' + (isEdit ? "'" + r._id + "'" : 'null') + ')">' + (isEdit?'Guardar':'Criar') + '</button>'
+      );
+    }
+
+    async function doSaveReg(id) {
+      var isEdit = !!id;
+      await doSave('save-btn',
+        fetchAPI(isEdit ? '/api/admin/inscricoes/' + id : '/api/admin/inscricoes', {
+          method: isEdit ? 'PUT' : 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            nome: document.getElementById('f-nome').value,
+            email: document.getElementById('f-email').value,
+            nome_atleta: document.getElementById('f-atleta').value,
+            escalao: document.getElementById('f-escalao').value,
+            mensalidade: document.getElementById('f-mensalidade').value,
+            estado: document.getElementById('f-estado').value,
+          })
+        }),
+        isEdit ? 'Inscricao atualizada!' : 'Inscricao criada!', loadRegistrations
+      );
+    }
+
+    async function updateRegStatus(id, newStatus) {
+      showConfirm('Alterar Estado', 'Marcar esta inscricao como "' + newStatus + '"?',
+        newStatus === 'Aprovada' ? 'Aprovar' : 'Rejeitar',
+        newStatus === 'Aprovada' ? 'btn-success' : 'btn-danger',
+        async function() {
+          var res = await fetchAPI('/api/admin/inscricoes/' + id, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ estado: newStatus })
+          });
+          if (res) { showToast('Estado atualizado!'); loadRegistrations(); loadStats(); }
+          else showToast('Erro ao atualizar.', 'error');
+        }
+      );
+    }
+
+    // ═══ 7. TREINADORES ═══
+    async function loadTreinadores() {
+      var container = document.getElementById('table-treinadores');
+      container.innerHTML = '<div class="loading">A carregar treinadores...</div>';
+      var search = document.getElementById('searchTreinador').value;
+      var estado = document.getElementById('filterTreinadorEstado').value;
+      var data = await fetchAPI('/api/admin/treinadores?search=' + encodeURIComponent(search) + '&estado=' + encodeURIComponent(estado));
+      if (!data || !data.data || !data.data.length) {
+        container.innerHTML = '<div class="empty-msg">Nenhum treinador encontrado.</div>';
+        document.getElementById('count-treinadores').innerText = "0";
+        return;
+      }
+      _treinadoresData = data.data;
+      document.getElementById('count-treinadores').innerText = data.data.length + ' registos';
+      var html = '<table><thead><tr><th>Nome</th><th>Email</th><th>Telefone</th><th>Escalão</th><th>Função</th><th>Início</th><th>Estado</th><th style="text-align:center">Ações</th></tr></thead><tbody>';
+      data.data.forEach(function(t, i) {
+        var badge = t.estado === 'Ativo' ? 'bg-green' : 'bg-red';
+        html += '<tr><td><b>' + esc(t.nome) + '</b></td><td class="mono">' + esc(t.email) + '</td><td class="mono">' + (t.telefone || '\u2014') + '</td><td>' + esc(t.escalao) + '</td><td>' + esc(t.funcao) + '</td><td class="mono">' + (t.dataInicio || '\u2014') + '</td><td><span class="badge ' + badge + '">' + esc(t.estado) + '</span></td><td><div class="action-group"><button class="btn btn-warning btn-sm" onclick="openTreinadorForm(' + i + ')">&#9998;</button><button class="btn btn-danger btn-sm" onclick="confirmDelete(\'/api/admin/treinadores/' + t._id + '\',\'' + esc(t.nome).replace(/'/g, "\\'") + '\',loadTreinadores)">&#128465;</button></div></td></tr>';
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function openTreinadorForm(idx) {
+      var isEdit = (idx !== undefined && idx !== null && idx !== false);
+      var t = isEdit ? _treinadoresData[idx] : {};
+      openModal(isEdit ? 'Editar Treinador' : 'Novo Treinador',
+        '<div class="form-row"><div class="form-group"><label>Nome *</label><input id="f-nome" value="' + esc(t.nome) + '" placeholder="Nome completo"></div><div class="form-group"><label>Email *</label><input id="f-email" type="email" value="' + esc(t.email) + '" placeholder="email@exemplo.com"></div></div>' +
+        '<div class="form-row"><div class="form-group"><label>Telefone</label><input id="f-telefone" value="' + esc(t.telefone) + '" placeholder="912345678"></div><div class="form-group"><label>Data Início</label><input id="f-datainicio" type="date" value="' + (t.dataInicio || '') + '"></div></div>' +
+        '<div class="form-row"><div class="form-group"><label>Escalão *</label><input id="f-escalao" value="' + esc(t.escalao) + '" placeholder="Seniores, Sub-18, Sub-15..."></div><div class="form-group"><label>Função *</label><select id="f-funcao"><option value="Treinador Principal"' + (t.funcao==='Treinador Principal'?' selected':'') + '>Treinador Principal</option><option value="Treinador Adjunto"' + (t.funcao==='Treinador Adjunto'?' selected':'') + '>Treinador Adjunto</option><option value="Preparador Físico"' + (t.funcao==='Preparador Físico'?' selected':'') + '>Preparador Físico</option><option value="Treinador de Guarda-Redes"' + (t.funcao==='Treinador de Guarda-Redes'?' selected':'') + '>Treinador de Guarda-Redes</option></select></div></div>' +
+        '<div class="form-group"><label>Estado</label><select id="f-estado"><option value="Ativo"' + (t.estado==='Ativo'?' selected':'') + '>Ativo</option><option value="Inativo"' + (t.estado==='Inativo'?' selected':'') + '>Inativo</option></select></div>',
+        '<button class="btn btn-outline" onclick="closeModalDirect()">Cancelar</button><button class="btn ' + (isEdit?'btn-warning':'btn-success') + '" id="save-btn" onclick="doSaveTreinador(' + (isEdit ? "'" + t._id + "'" : 'null') + ')">' + (isEdit?'Guardar':'Criar') + '</button>'
+      );
+    }
+
+    async function doSaveTreinador(id) {
+      var isEdit = !!id;
+      await doSave('save-btn',
+        fetchAPI(isEdit ? '/api/admin/treinadores/' + id : '/api/admin/treinadores', {
+          method: isEdit ? 'PUT' : 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            nome: document.getElementById('f-nome').value,
+            email: document.getElementById('f-email').value,
+            telefone: document.getElementById('f-telefone').value,
+            escalao: document.getElementById('f-escalao').value,
+            funcao: document.getElementById('f-funcao').value,
+            dataInicio: document.getElementById('f-datainicio').value,
+            estado: document.getElementById('f-estado').value,
+          })
+        }),
+        isEdit ? 'Treinador atualizado!' : 'Treinador criado!', loadTreinadores
+      );
+    }
+
+    function debouncedLoad(type) {
+      clearTimeout(_debounceTimer);
+      _debounceTimer = setTimeout(function() {
+        var loaders = { utilizadores: loadUsers, bilhetes: loadTickets, loja: loadShop, quotas: loadQuotas, inscricoes: loadRegistrations, treinadores: loadTreinadores, produtos: loadProdutos };
+        if (loaders[type]) loaders[type]();
+      }, 500);
+    }
+
+    // ═══ 8. PRODUTOS LOJA ═══
+    var _produtosData = [];
+    var _categoriasLabel = { loja1: 'Equipamentos', loja2: 'Sweats', loja3: 'Polos', loja4: 'Acessórios' };
+
+    async function loadProdutos() {
+      var container = document.getElementById('table-produtos');
+      container.innerHTML = '<div class="loading">A carregar produtos...</div>';
+      var search = document.getElementById('searchProduto').value;
+      var categoria = document.getElementById('filterProdutoCategoria').value;
+      var data = await fetchAPI('/api/admin/produtos?search=' + encodeURIComponent(search) + '&categoria=' + encodeURIComponent(categoria));
+      if (!data || !data.data || !data.data.length) {
+        container.innerHTML = '<div class="empty-msg">Nenhum produto encontrado.</div>';
+        document.getElementById('count-produtos').innerText = '0';
+        return;
+      }
+      _produtosData = data.data;
+      document.getElementById('count-produtos').innerText = data.data.length + ' produtos';
+      var html = '<table><thead><tr><th>SKU</th><th>Nome</th><th>Categoria</th><th class="text-right">Preço</th><th style="text-align:center">Ações</th></tr></thead><tbody>';
+      data.data.forEach(function(p, i) {
+        var catLabel = _categoriasLabel[p.categoria] || p.categoria;
+        html += '<tr><td class="mono">' + esc(p.sku) + '</td><td><b>' + esc(p.nome) + '</b></td><td><span class="badge bg-blue">' + catLabel + '</span></td><td class="mono text-right bold">' + fmtMoney(p.preco) + '</td><td><div class="action-group"><button class="btn btn-warning btn-sm" onclick="openProdutoForm(' + i + ')">&#9998;</button><button class="btn btn-danger btn-sm" onclick="confirmDelete(\'/api/admin/produtos/' + p._id + '\',\'' + esc(p.nome).replace(/'/g,"\\'") + '\',loadProdutos)">&#128465;</button></div></td></tr>';
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function openProdutoForm(idx) {
+      var isEdit = (idx !== undefined && idx !== null && idx !== false);
+      var p = isEdit ? _produtosData[idx] : {};
+      openModal(isEdit ? 'Editar Produto' : 'Novo Produto',
+        '<div class="form-row"><div class="form-group"><label>SKU *</label><input id="f-sku" value="' + esc(p.sku) + '" placeholder="EQ-001" ' + (isEdit ? 'disabled' : '') + '></div><div class="form-group"><label>Preço *</label><input id="f-preco" type="number" step="0.01" value="' + (p.preco || '') + '" placeholder="0.00"></div></div>' +
+        '<div class="form-group"><label>Nome *</label><input id="f-nome" value="' + esc(p.nome) + '" placeholder="Nome do produto"></div>' +
+        '<div class="form-group"><label>Categoria *</label><select id="f-categoria"><option value="loja1"' + (p.categoria==='loja1'?' selected':'') + '>Equipamentos</option><option value="loja2"' + (p.categoria==='loja2'?' selected':'') + '>Sweats</option><option value="loja3"' + (p.categoria==='loja3'?' selected':'') + '>Polos</option><option value="loja4"' + (p.categoria==='loja4'?' selected':'') + '>Acessórios</option></select></div>',
+        '<button class="btn btn-outline" onclick="closeModalDirect()">Cancelar</button><button class="btn ' + (isEdit ? 'btn-warning' : 'btn-success') + '" id="save-btn" onclick="doSaveProduto(' + (isEdit ? "'" + p._id + "'" : 'null') + ')">' + (isEdit ? 'Guardar' : 'Criar') + '</button>'
+      );
+    }
+
+    async function doSaveProduto(id) {
+      var isEdit = !!id;
+      await doSave('save-btn',
+        fetchAPI(isEdit ? '/api/admin/produtos/' + id : '/api/admin/produtos', {
+          method: isEdit ? 'PUT' : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sku: document.getElementById('f-sku').value,
+            nome: document.getElementById('f-nome').value,
+            categoria: document.getElementById('f-categoria').value,
+            preco: parseFloat(document.getElementById('f-preco').value),
+          })
+        }),
+        isEdit ? 'Produto atualizado!' : 'Produto criado!', loadProdutos
+      );
+    }
+
+    function refreshAll() {
+      loadStats();
+      var activeTab = document.querySelector('.tab-btn.active');
+      if (activeTab) activeTab.click();
+    }
+
+    window.onload = function() { checkAdminAccess(); };
+  </script>
+</body>
+</html>

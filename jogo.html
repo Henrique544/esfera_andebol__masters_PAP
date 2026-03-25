@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Comprar Bilhetes</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1,h2,h3 { color:#333; margin:0; }
+    p { margin:0; }
+
+    .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:10px; flex-wrap:wrap; }
+    .btn { padding:8px 14px; border-radius:8px; border:none; cursor:pointer; color:#fff; }
+    .btn-primary { background:#007bff; }
+    .btn-dark { background:#111; }
+    .btn:disabled { background:#aaa; cursor:not-allowed; }
+    .linkbtn{padding:8px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer}
+    .error { color:#d00; margin:10px 0; }
+
+    .card { background:#f6f6f6; padding:12px; border-radius:10px; border:1px solid #eee; margin-bottom:14px; }
+    .mini { font-size:12px; color:#666; }
+    .pill { display:inline-block; padding:6px 10px; border-radius:999px; background:#f1f3f5; border:1px solid #e9ecef; font-size:12px; }
+    .hr { height:1px; background:#eee; margin:12px 0; }
+
+    .tabs { display:flex; gap:10px; flex-wrap:wrap; margin:10px 0; }
+    .tabbtn { padding:8px 12px; border-radius:999px; border:1px solid #ddd; cursor:pointer; background:#fff; }
+    .tabbtn.active { background:#111; color:#fff; border-color:#111; }
+
+    .panel { display:none; border:1px solid #ddd; border-radius:12px; padding:12px; margin-top:10px; }
+    .panel.active { display:block; }
+
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:end; margin-top:10px; }
+    input,select { padding:8px; border-radius:8px; border:1px solid #ccc; width:260px; }
+
+    .ui-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:9999}
+    .ui-modal{width:min(520px,92vw);background:#fff;border-radius:16px;border:1px solid #eee;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden}
+    .ui-head{padding:14px 16px;border-bottom:1px solid #eee;display:flex;gap:10px;align-items:center;justify-content:space-between}
+    .ui-title{margin:0;font-size:16px}
+    .ui-close{border:none;background:transparent;font-size:18px;cursor:pointer;line-height:1}
+    .ui-body{padding:14px 16px;color:#222;white-space:pre-line}
+    .ui-foot{padding:12px 16px;border-top:1px solid #eee;display:flex;gap:10px;justify-content:flex-end}
+    .ui-btn{border:none;border-radius:10px;padding:10px 14px;cursor:pointer}
+    .ui-btn-primary{background:#111;color:#fff}
+    .ui-btn-ghost{background:#f2f2f2}
+    .ui-badge{font-size:12px;padding:4px 8px;border-radius:999px;background:#f1f3f5;border:1px solid #e9ecef}
+  </style>
+</head>
+
+<body>
+  <div class="top">
+    <h1>Comprar Bilhetes</h1>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn btn-primary" id="goSocioBtn">Área de Sócio</button>
+      <button class="linkbtn" onclick="window.location.href='pagina_principal.html';">Voltar ao início</button>
+    </div>
+  </div>
+
+  <div id="msg" class="error"></div>
+  <div class="card" id="userCard">A carregar...</div>
+
+  <div class="tabs">
+    <button class="tabbtn active" data-tab="comprar">Comprar</button>
+    <button class="tabbtn" data-tab="info">Info do jogo</button>
+  </div>
+
+  <div class="panel active" id="panel-comprar">
+    <h2>Compra</h2>
+    <p class="mini" id="hintTop">Confirma o teu email e introduz o código de segurança para concluir a compra.</p>
+
+    <form id="formulario">
+      <div class="row">
+        <div>
+          <label><strong>Email:</strong></label><br/>
+          <input type="email" id="emailUser" required />
+          <div class="mini">Tem de corresponder ao utilizador com sessão iniciada.</div>
+        </div>
+
+        <div>
+          <label><strong>Código de segurança:</strong></label><br/>
+          <input type="password" id="seguranca" required />
+          <div class="mini">Usado para confirmar a compra.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label><strong>Quantidade:</strong></label><br/>
+          <input type="number" id="Quantidade" min="1" max="10" required />
+        </div>
+
+        <div>
+          <label><strong>Setor:</strong></label><br/>
+          <select id="setor" required>
+            <option value="">-- selecionar --</option>
+            <option value="Central_A1">Central A1</option>
+            <option value="Central_A2">Central A2</option>
+            <option value="Laterais">Laterais</option>
+            <option value="Zona VIP" id="vipOpt">Zona VIP</option>
+          </select>
+          <div class="mini" id="vipHint" style="margin-top:6px;"></div>
+        </div>
+
+        <button class="btn btn-dark" type="submit" id="btnSubmit">Comprar</button>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="card" style="margin-bottom:0;">
+        <div class="mini">Pré-visualização (o servidor confirma o preço final):</div>
+        <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <span class="pill"><strong>Total estimado:</strong> <span id="preco">0.00€</span></span>
+          <span class="pill"><strong>Nota:</strong> VIP só Premium nº 1-499</span>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="panel" id="panel-info">
+    <h2>Info do jogo</h2>
+    <div class="card" id="gameCard">A carregar jogo...</div>
+    <p class="mini">Dica: esta página aceita <strong>?slug=...</strong> no URL.</p>
+  </div>
+
+  <!-- MODAL UI -->
+  <div class="ui-backdrop" id="uiBackdrop" role="dialog" aria-modal="true">
+    <div class="ui-modal">
+      <div class="ui-head">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="ui-badge" id="uiKind">INFO</span>
+          <h3 class="ui-title" id="uiTitle">Aviso</h3>
+        </div>
+        <button class="ui-close" id="uiClose" aria-label="Fechar">✕</button>
+      </div>
+      <div class="ui-body" id="uiBody"></div>
+      <div class="ui-foot" id="uiFoot"></div>
+    </div>
+  </div>
+
+  <script>
+    // Modal UI
+    const ui = (() => {
+      const bd = document.getElementById("uiBackdrop");
+      const kind = document.getElementById("uiKind");
+      const title = document.getElementById("uiTitle");
+      const body = document.getElementById("uiBody");
+      const foot = document.getElementById("uiFoot");
+      const closeBtn = document.getElementById("uiClose");
+
+      function open({k="INFO", t="Aviso", text="", buttons=[]}){
+        kind.textContent = k;
+        title.textContent = t;
+        body.textContent = text;
+        foot.innerHTML = "";
+        buttons.forEach(b=>{
+          const btn=document.createElement("button");
+          btn.className="ui-btn " + (b.primary ? "ui-btn-primary" : "ui-btn-ghost");
+          btn.textContent=b.text;
+          btn.addEventListener("click", ()=>{ b.onClick?.(); });
+          foot.appendChild(btn);
+        });
+        bd.style.display="flex";
+      }
+      function close(){ bd.style.display="none"; }
+      closeBtn.addEventListener("click", close);
+      bd.addEventListener("click", (e)=>{ if(e.target===bd) close(); });
+
+      return {
+        alert({title="Aviso", message="", kind="INFO"}){
+          return new Promise(resolve=>{
+            open({ k: kind, t: title, text: message, buttons:[{text:"OK", primary:true, onClick:()=>{ close(); resolve(true);} }]});
+          });
+        },
+        confirm({title="Confirmar", message="", kind="CONFIRMAÇÃO"}){
+          return new Promise(resolve=>{
+            open({
+              k: kind, t: title, text: message,
+              buttons:[
+                {text:"Cancelar", onClick:()=>{ close(); resolve(false);} },
+                {text:"Confirmar", primary:true, onClick:()=>{ close(); resolve(true);} }
+              ]
+            });
+          });
+        }
+      };
+    })();
+
+    // Tabs
+    function showTab(key) {
+      document.querySelectorAll(".tabbtn").forEach(b => b.classList.toggle("active", b.dataset.tab === key));
+      document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+      document.getElementById("panel-" + key).classList.add("active");
+    }
+    document.querySelectorAll(".tabbtn").forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+  </script>
+
+  <script>
+    const API = "http://localhost:3000";
+
+    const msg = document.getElementById("msg");
+    const userCard = document.getElementById("userCard");
+    const gameCard = document.getElementById("gameCard");
+
+    const goSocioBtn = document.getElementById("goSocioBtn");
+    const emailUserInput = document.getElementById("emailUser");
+    const segurancaInput = document.getElementById("seguranca");
+    const quantidadeInput = document.getElementById("Quantidade");
+    const setorSelect = document.getElementById("setor");
+    const precoSpan = document.getElementById("preco");
+    const btnSubmit = document.getElementById("btnSubmit");
+    const vipOpt = document.getElementById("vipOpt");
+    const vipHint = document.getElementById("vipHint");
+
+    let currentUser = null;
+    let currentGame = null;
+
+    function getEmailLogin() {
+      return localStorage.getItem("emailSocio") || new URLSearchParams(window.location.search).get("email");
+    }
+    function getSlug() {
+      return new URLSearchParams(window.location.search).get("slug") || "esfera-vs-boa-hora-2026-03-15";
+    }
+
+    function parseSocioNumber(v) {
+      const s = String(v ?? "").trim();
+      if (!s) return null;
+      const n = Number(s);
+      if (!Number.isFinite(n)) return null;
+      return Math.trunc(n);
+    }
+
+    function isVipEligible(user) {
+      const n = parseSocioNumber(user?.numeroSocio);
+      return user?.tipo === "Premium" && n !== null && n >= 1 && n < 500;
+    }
+
+    function previewUnitPrice(user, setor) {
+      if (setor === "Zona VIP") return 25.00;
+      const base = (setor === "Central") ? 12.00 : 8.00;
+      if (user?.tipo === "Premium") return Number((base * 0.8).toFixed(2));
+      if (user?.tipo === "Normal") return Number((base * 0.9).toFixed(2));
+      return base;
+    }
+
+    function atualizarPrecoPreview() {
+      const q = Number(quantidadeInput.value || 0);
+      const setor = setorSelect.value;
+      if (!setor || q <= 0 || !currentUser) { precoSpan.textContent = "0.00€"; return; }
+      const unit = previewUnitPrice(currentUser, setor);
+      precoSpan.textContent = (unit * q).toFixed(2) + "€";
+    }
+
+    async function carregarJogo() {
+      const slug = getSlug();
+      const res = await fetch(`${API}/api/jogos/slug/${encodeURIComponent(slug)}`);
+      const data = await res.json();
+      if (!res.ok) {
+        msg.textContent = data.error || "Erro ao obter jogo.";
+        gameCard.textContent = "Jogo indisponível.";
+        return;
+      }
+      currentGame = data.jogo;
+
+      gameCard.innerHTML = `
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <span class="pill"><strong>Jogo:</strong> ${currentGame.titulo}</span>
+          <span class="pill"><strong>Competição:</strong> ${currentGame.competicao}</span>
+          <span class="pill"><strong>Local:</strong> ${currentGame.local}</span>
+          <span class="pill"><strong>Data:</strong> ${currentGame.data}</span>
+          <span class="pill"><strong>Hora:</strong> ${currentGame.hora}</span>
+        </div>
+        <div class="mini" style="margin-top:8px;">Slug: ${currentGame.slug}</div>
+      `;
+    }
+
+    // ✅ AQUI fica o aviso/redirect igual às inscrições
+    async function carregarUser() {
+      const emailLogin = getEmailLogin();
+      if (!emailLogin) {
+        await ui.alert({kind:"ERRO", title:"Sessão", message:"Faz login primeiro para comprar bilhetes."});
+        window.location.href = "login.html";
+        return;
+      }
+
+      const res = await fetch(`${API}/api/historico?email=${encodeURIComponent(emailLogin)}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        await ui.alert({kind:"ERRO", title:"Sessão", message: data.error || "Erro ao obter utilizador."});
+        window.location.href = "login.html";
+        return;
+      }
+
+      currentUser = data.user;
+      localStorage.setItem("emailSocio", currentUser.email);
+      emailUserInput.value = currentUser.email;
+
+      userCard.innerHTML = `
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <span class="pill"><strong>Nome:</strong> ${currentUser.nome ?? "-"}</span>
+          <span class="pill"><strong>Email:</strong> ${currentUser.email}</span>
+          <span class="pill"><strong>Tipo:</strong> ${currentUser.tipo}</span>
+          <span class="pill"><strong>Nº:</strong> ${currentUser.numeroSocio}</span>
+          <span class="pill"><strong>Código:</strong> ••••-${currentUser.codigoSegurancaHint}</span>
+        </div>
+      `;
+
+      const okVip = isVipEligible(currentUser);
+      vipOpt.disabled = !okVip;
+      vipHint.textContent = okVip ? "VIP disponível para ti." : "VIP só disponível para Premium com nº 1–499.";
+      if (!okVip && setorSelect.value === "Zona VIP") setorSelect.value = "";
+
+      atualizarPrecoPreview();
+    }
+
+    function validarEmailSessao() {
+      const emailLogin = getEmailLogin();
+      const emailForm = emailUserInput.value.trim();
+      if (!emailForm) return { ok:false, msg:"Insere o email." };
+      if (!emailLogin) return { ok:false, msg:"Sessão inválida. Faz login novamente." };
+      if (emailForm !== emailLogin) return { ok:false, msg:"O email não corresponde ao utilizador com sessão iniciada." };
+      return { ok:true };
+    }
+
+    goSocioBtn.addEventListener("click", () => {
+      const email = (currentUser?.email) || getEmailLogin();
+      window.location.href = `areaSocio.html?email=${encodeURIComponent(email || "")}`;
+    });
+
+    quantidadeInput.addEventListener("input", atualizarPrecoPreview);
+    setorSelect.addEventListener("change", atualizarPrecoPreview);
+
+    document.getElementById("formulario").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      btnSubmit.disabled = true;
+      msg.textContent = "";
+
+      try {
+        if (!currentGame) await carregarJogo();
+        if (!currentUser) await carregarUser();
+
+        const vEmail = validarEmailSessao();
+        if (!vEmail.ok) { await ui.alert({kind:"ERRO", title:"Email", message:vEmail.msg}); return; }
+
+        const codigoSeguranca = segurancaInput.value.trim();
+        if (!codigoSeguranca) { await ui.alert({kind:"ERRO", title:"Segurança", message:"Insere o código de segurança."}); return; }
+
+        const quantidade = Number(quantidadeInput.value || 0);
+        if (!Number.isFinite(quantidade) || quantidade < 1 || quantidade > 10) {
+          await ui.alert({kind:"ERRO", title:"Quantidade", message:"Quantidade inválida (1-10)."});
+          return;
+        }
+
+        const setor = setorSelect.value;
+        if (!setor) { await ui.alert({kind:"ERRO", title:"Setor", message:"Escolhe um setor."}); return; }
+
+        if (setor === "Zona VIP" && !isVipEligible(currentUser)) {
+          await ui.alert({kind:"ERRO", title:"VIP", message:"VIP só para Premium com nº 1–499."});
+          return;
+        }
+
+        const ok = await ui.confirm({
+          title:"Confirmar compra",
+          message:
+            `Confirmar compra?\n\n` +
+            `Jogo: ${currentGame?.titulo || currentGame?.slug}\n` +
+            `Setor: ${setor}\n` +
+            `Quantidade: ${quantidade}\n\n` +
+            `Nota: o preço final é calculado pelo servidor.`
+        });
+        if (!ok) return;
+
+        const payload = {
+          email: emailUserInput.value.trim(),
+          codigoSeguranca,
+          gameSlug: currentGame.slug,
+          quantidade,
+          setor
+        };
+
+        const res = await fetch(`${API}/api/bilhetes/comprar`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          await ui.alert({kind:"ERRO", title:"Compra", message: data.error || "Erro ao comprar bilhete."});
+          return;
+        }
+
+        const extra = (data.precoTotal != null)
+          ? `\n\nPreço final: ${Number(data.precoTotal).toFixed(2)}€`
+          : "";
+
+        await ui.alert({kind:"SUCESSO", title:"Compra registada", message:"A compra foi registada no teu histórico. Para confirmar o bilhete deve realizar o pagamento presencialmnete na secretaria" + extra});
+        window.location.href = `areaSocio.html?email=${encodeURIComponent(payload.email)}`;
+
+      } catch (err) {
+        console.error(err);
+        await ui.alert({kind:"ERRO", title:"Servidor", message:"Erro de ligação ao servidor."});
+      } finally {
+        btnSubmit.disabled = false;
+      }
+    });
+
+    (async () => {
+      await carregarJogo();
+      await carregarUser();
+      atualizarPrecoPreview();
+    })();
+  </script>
+</body>
+</html>

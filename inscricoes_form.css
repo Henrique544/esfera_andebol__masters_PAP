@@ -1,0 +1,99 @@
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #e68a00;
+        padding: 0px;
+        color: white;
+      }
+
+      .botao-link {
+        background-color: #007bff;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+      }
+
+      .botao-link:hover {
+        background-color: #0056b3;
+      }
+
+      form {
+        background-color: #704c12;
+        padding: 30px;
+        max-width: 500px;
+        margin: 90px auto 0 auto;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+      }
+
+      form h2 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        font-weight: 600;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 6px;
+        border: none;
+        margin-bottom: 20px;
+        font-size: 1rem;
+      }
+
+      input[type="email"],
+      input[type="password"],
+      select {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 6px;
+        border: none;
+        margin-bottom: 20px;
+        font-size: 1rem;
+      }
+
+
+      input[type="text"]:focus,
+      input[type="email"]:focus,
+      input[type="number"]:focus,
+      input[type="password"]:focus,
+      select:focus {
+        outline: 2px solid #f2a72c;
+        background-color: #f9f1e7;
+        color: #333;
+      }
+
+      button[type="submit"] {
+        background-color: #f2a72c;
+        color: #704c12;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 100%;
+      }
+
+      button[type="submit"]:hover {
+        background-color: #d18e0c;
+      }

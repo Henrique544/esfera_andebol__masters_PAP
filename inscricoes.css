@@ -1,0 +1,162 @@
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #e68a00;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        nav {
+            background: #f2a72c;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+
+        nav img {
+            height: 80px;
+            cursor: pointer;
+        }
+
+        nav h1 {
+            color: white;
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-left: 10px;
+            flex-grow: 1;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            background-color: transparent;
+        }
+
+        nav a:hover {
+            background-color: #cc7700;
+        }
+
+        .hiperligacoes {
+            display: inline-block;
+            margin: 0 15px;
+            vertical-align: middle;
+        }
+
+        .botao-link {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        button.botao-link, .tab-button {
+            background: linear-gradient(145deg, #0077b6, #00b4d8);
+            color: #fff;
+            box-shadow: 0 5px 0 #023e8a, 0 10px 15px rgba(0,0,0,0.2);
+            transition: all 0.2s ease-in-out;
+        }
+
+        button.botao-link:hover, .tab-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #023e8a, 0 12px 20px rgba(0,0,0,0.25);
+        }
+
+        h3 {
+            text-align: center;
+            color: white;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .caixa_socio {
+            text-align: center;
+        }
+
+        .caixa_socio h1 {
+            background: linear-gradient(135deg, #cc7700, #f2a72c);
+            color: #fff;
+            padding: 12px 25px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        } 
+
+        table {
+            width: 60%;
+            margin: 20px auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-collapse: collapse;
+            background-color: #fff;
+        }
+        th, td {
+            padding: 12px 18px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2a72c;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .inscricao_form {
+            background-color: #ffff; /* azul lavanda moderno */
+            padding: 30px;
+            max-width: 500px;
+            text-align: center;
+            margin: 0 auto;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(90, 108, 255, 0.35);
+        }
+
+        .inscricao_form h1 {
+            color: #f2a72c;
+        }
+
+        .inscricao_form img {
+            margin-bottom: 9px;
+            width: fit-content;
+            margin: 0 auto;
+            border: 5px solid #5d88ff;
+            cursor: pointer;
+        }
+
+        .inscricao_form a {
+            display: inline-block;
+            margin-top: 10px;
+            color: #8b5dff;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .inscricao_form a:hover {
+            text-decoration: underline;
+        }

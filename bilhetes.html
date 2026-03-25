@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bilhetes</title>
+  <link rel="stylesheet" href="bilhetes.css">
+  <meta charset="UTF-8">
+</head>
+
+<nav>
+  <div style="display: inline-block; vertical-align: middle;">
+    <img src="esfera.png" style="vertical-align: middle; height: 80px;" usemap="#esfera">
+    <h1 style="display: inline; vertical-align: middle; margin: 0 10px;">Esfera Andebol Masters</h1>
+  </div>
+
+  <map name="esfera">
+    <area shape="rect" coords="62,52,79,66" title="voltar ao inicio" href="pagina_principal.html">
+    <area shape="circle" coords="62,52,17" title="voltar ao inicio" href="pagina_principal.html">
+    <area shape="poly" coords="18,5,3,14,32,5,7,26,3,40,2,58,8,86,4,72,13,95,30,103,24,110,61,118,42,111,81,114,104,100,94,105,117,86,113,76,111,66,116,47,104,40,100,30,90,21,83,14,71,10,58,9,49,13,23,19,76,87,29,71,46,44,77,51,90,65,52,71,35,55,73,41,57,93,68,99,48,96,57,36,62,52,79,66" title="voltar ao inicio" href="pagina_principal.html">
+  </map>
+
+  <a href="Noticias.html" class="hiperligacoes">Noticias</a>
+  <a href="bilhetes.html" class="hiperligacoes">Bilhetes</a>
+  <a href="inscricoes.html" class="hiperligacoes">Inscrições</a>
+  <a href="loja.html" class="hiperligacoes">Loja</a>
+  <a href="Calendario.html" class="hiperligacoes">Calendário</a>
+  <button class="botao-link" onclick="window.location.href='login.html';">Fazer login / Criar conta</button>
+</nav>
+
+<body>
+  <br>
+
+  <div class="caixa_socio">
+    <h2>Adeptos</h2>
+  </div>
+
+  <table border="1">
+    <tr>
+      <th>lugar</th>
+      <th>preço</th>
+    </tr>
+    <tr>
+      <td>Central A1</td>
+      <td>3€</td>
+    </tr>
+    <tr>
+      <td>Central A2</td>
+      <td>3€</td>
+    </tr>
+    <tr>
+      <td>Lateral A1 e A2</td>
+      <td>2€</td>
+    </tr>
+  </table>
+
+  <br><br><br>
+
+  <div class="caixa_socio">
+    <h2>Socios</h2>
+  </div>
+
+  <table border="1">
+    <tr>
+      <th>lugar</th>
+      <th>preço</th>
+    </tr>
+    <tr>
+      <td>Central A1</td>
+      <td>1.50€</td>
+    </tr>
+    <tr>
+      <td>Central A2</td>
+      <td>1.50€</td>
+    </tr>
+    <tr>
+      <td>Lateral A1 e A2</td>
+      <td>1€</td>
+    </tr>
+  </table>
+
+  <br><br><br>
+
+  <div class="caixa_socio">
+    <h2>Socios Premium</h2>
+  </div>
+
+  <table border="1">
+    <tr>
+      <th>lugar</th>
+      <th>preço</th>
+    </tr>
+    <tr>
+      <td>Central A1</td>
+      <td>Entrada Livre*</td>
+    </tr>
+    <tr>
+      <td>Central A2</td>
+      <td>Entrada Livre*</td>
+    </tr>
+    <tr>
+      <td>Lateral A1 e A2</td>
+      <td>Entrada Livre*</td>
+    </tr>
+    <tr>
+      <td>Zona VIP</td>
+      <td>5€</td>
+    </tr>
+  </table>
+
+  <h3>*se ainda houverem bilhetes desponiveis</h3>
+
+  <br><br>
+
+  <div class="pavilhao">
+    <img src="pavilhao.png" usemap="#pavilhao">
+  </div>
+
+  <map name="pavilhao">
+    <area shape="rect" coords="233,180,92,172" title="Vista das Centrais A1 e A2" href="Central_A1_A2.html">
+    <area shape="circle" coords="233,180,141" title="Vista das Centrais A1 e A2" href="Central_A1_A2.html">
+    <area shape="poly" coords="88,66,248,71,233,180,92,172" title="Vista das Centrais A1 e A2" href="Central_A1_A2.html">
+    <area shape="rect" coords="445,180,315,173" title="Vista das laterais e da area VIP" href="Laterais_A1_A2.html">
+    <area shape="circle" coords="445,180,130" title="Vista das laterais e da area VIP" href="Laterais_A1_A2.html">
+    <area shape="poly" coords="325,72,449,73,445,180,315,173" title="Vista das laterais e da area VIP" href="Laterais_A1_A2.html">
+  </map>
+
+  <br>
+  <h1>Clique nas zonas do pavilhao para ver a vista de cada setor</h1>
+
+  <br><br><br>
+
+  <div class="caixa_socio">
+    <h1>Comprar Bilhetes</h1>
+  </div>
+
+  <br>
+
+  <div class="jogo">
+    <h2>Esfera vs Boa-Hora</h2>
+    <div class="caixa-jogos12">
+      <div class="informacoes">
+        <span>Segunda</span>
+        <span>Ronda</span>
+      </div>
+      <div class="detalhes">
+        <span>🏆 Taça de Portugal</span>
+        <span>🏟️ Pavilhão desportivo da Ajuda</span>
+        <span>📅 28 Março 2026</span>
+        <span>⏰ 20:15</span>
+
+        <!-- ✅ Compra só no formulário jogo.html -->
+        <button class="botao-link"
+          onclick="window.location.href='jogo.html?slug=esfera-vs-boa-hora-2026-03-15';">
+          Ir para compra (formulário)
+        </button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,130 @@
+<html>
+    <head>
+    <title>Calendario de Jogos</title>
+    <link rel="stylesheet" href="calendario.css">
+    <meta charset="UTF-8">
+    </head>
+        <nav style="white-space: nowrap">
+  <div style="display: inline-block; vertical-align: middle;">
+    <img src="esfera.png" style="vertical-align: middle; height: 80px;" usemap="#esfera">  
+    <h1 style="display: inline; vertical-align: middle; margin: 0 10px;">Esfera Andebol Masters</h1>
+  </div>
+  <map name="esfera">  
+<area shape="rect" coords="62,52,79,66" title="voltar ao inicio" href="pagina_principal.html"> 
+<area shape="circle" coords="62,52,17" title="voltar ao inicio" href="pagina_principal.html">  
+<area shape="poly" coords="18,5,3,14,32,5,7,26,3,40,2,58,8,86,4,72,13,95,30,103,24,110,61,118,42,111,81,114,104,100,94,105,117,86,113,76,111,66,116,47,104,40,100,30,90,21,83,14,71,10,58,9,49,13,23,19,76,87,29,71,46,44,77,51,90,65,52,71,35,55,73,41,57,93,68,99,48,96,57,36,62,52,79,66" title="voltar ao inicio" href="pagina_principal.html"> 
+</map>
+  <a href="Noticias.html" class="hiperligacoes">Noticias</a>
+  <a href="bilhetes.html" class="hiperligacoes">Bilhetes</a>
+  <a href="inscricoes.html" class="hiperligacoes">Inscrições</a>
+  <a href="loja.html"class="hiperligacoes">Loja</a>
+  <a href="Calendario.html" class="hiperligacoes" >Calendário</a>
+  <button class="botao-link" onclick="window.location.href='login.html';">Fazer login / Criar conta</button>
+  </nav>
+  <body>
+    
+<h1>Calendário de Jogos - Esfera Andebol Masters</h1>
+<br>
+<div class="mes-ano">
+  <button class="botao-mes" onclick="mudarMes(-1)">&#8592; Mês Anterior</button>
+  <span id="mesAno"></span>
+  <button class="botao-mes" onclick="mudarMes(1)">Próximo Mês &#8594;</button>
+</div>
+<div class="calendario" id="calendario"></div>
+
+<div class="modal" id="modal">
+  <div class="modal-conteudo">
+    <span class="fechar" onclick="fecharModal()">x</span>
+    <h2>Detalhes do Jogo</h2>
+    <p id="detalhes"></p>
+  </div>
+</div>
+
+<script>
+const jogos = [
+{data: '2026-2-15', adversario: 'Boa Vista', local: 'Pavilhão Desportivo da Ajuda', competicao: 'Segunda Divisão' , hora: '18:00', resultado: '32 - 45', pontos: '2' , status: 'vitoria'},
+{data: '2026-2-22', adversario: 'Sporting B', local: 'Pavilhao Joao Rocha', competicao: 'Segunda Divisão' , hora: '21:00', resultado: '28 - 28', pontos: '1' , status: 'empate'},
+{data: '2026-3-1', adversario: 'São joao da Madeira', local: 'Pavilhão Municipal das Travessas', competicao: 'Segunda Divisão' , hora: '20:00', resultado: '26 - 31', pontos: '2' , status: 'vitoria'},
+{data: '2026-3-15', adversario: 'CD Feirense', local: 'Pavilhão ginasio sao joão de ver', competicao: 'Segunda Divisão', hora: '20:15', resultado: '28 - 23', pontos: '2' , status: 'vitoria'},
+{data: '2026-3-18', adversario: 'Almada', local: 'Pavilhão Desportivo da Ajuda', hora: '20:00', competicao: 'Segunda Divisão' , resultado: '29 - 32', pontos: '0' , status: 'derrota'},
+{data: '2026-3-29', adversario: 'Porto B', local: 'Pavilhão Municipal da Lavandeira', hora: '18:00', competicao: 'Segunda Divisão' , resultado: 'por defenir', pontos:'por defenir' , status: 'agendado'},
+{data: '2026-3-28', adversario: 'Boa-Hora', local: ' Pavilhão desportivo da Ajuda', competicao: 'Taça de Portugal', hora: '20:15', resultado: 'por defenir', pontos: 'por defenir' , status: 'agendado'},
+];
+
+let dataAtual = new Date();
+
+function formatarData(data) {
+  const d = new Date(data);
+  return d.toLocaleDateString('pt-PT', {day:'2-digit', month:'short', year:'numeric'});
+}
+
+function gerarCalendario() {
+  const calendario = document.getElementById('calendario');
+  calendario.innerHTML = '';
+
+  const ano = dataAtual.getFullYear();
+  const mes = dataAtual.getMonth();
+  document.getElementById('mesAno').innerText = dataAtual.toLocaleDateString('pt-PT', {month: 'long', year: 'numeric'});
+
+  const primeiroDia = new Date(ano, mes, 1);
+  const ultimoDia = new Date(ano, mes + 1, 0);
+  const inicioSemana = primeiroDia.getDay();
+
+  for(let i=0; i<inicioSemana; i++){
+    const diaVazio = document.createElement('div');
+    calendario.appendChild(diaVazio);
+  }
+
+  for(let dia = 1; dia <= ultimoDia.getDate(); dia++){
+    const diaDiv = document.createElement('div');
+    diaDiv.className = 'dia';
+
+    const hoje = new Date();
+    if(dia === hoje.getDate() && mes === hoje.getMonth() && ano === hoje.getFullYear()){
+      diaDiv.classList.add('hoje');
+    }
+
+    const jogoNoDia = jogos.find(jogo => {
+      const dataJogo = new Date(jogo.data);
+      return dataJogo.getDate() === dia && dataJogo.getMonth() === mes && dataJogo.getFullYear() === ano;
+    });
+
+    if(jogoNoDia){
+      diaDiv.classList.add(jogoNoDia.status);
+      diaDiv.innerHTML = `<strong>${jogoNoDia.adversario}</strong>`;
+      diaDiv.onclick = () => mostrarModal(jogoNoDia);
+    } else {
+      diaDiv.innerHTML = `<strong>${dia}</strong>`;
+    }
+
+    calendario.appendChild(diaDiv);
+  }
+}
+
+function mostrarModal(jogo){
+  document.getElementById('detalhes').innerHTML = `
+    <strong>Data:</strong> ${formatarData(jogo.data)}<br>
+    <strong>Adversário:</strong> ${jogo.adversario}<br>
+    <strong>Local:</strong> ${jogo.local}<br>
+    <strong>Hora:</strong> ${jogo.hora}<br>
+    <strong>Competição:</strong> ${jogo.competicao}<br>
+    <strong>Pontos ganhos nesta partida:</strong> ${jogo.pontos}<br>
+    <strong>Resultado:</strong> ${jogo.resultado || 'Por jogar'}
+  `;
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function fecharModal(){
+  document.getElementById('modal').style.display = 'none';
+}
+
+function mudarMes(valor){
+  dataAtual.setMonth(dataAtual.getMonth() + valor);
+  gerarCalendario();
+}
+
+gerarCalendario();
+
+</script>
+</body>
+</html>

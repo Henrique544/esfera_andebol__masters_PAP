@@ -1,0 +1,266 @@
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Esfera Andebol Masters - Termos e Condições</title>
+  <meta charset="UTF-8">
+  <body style="background-color:#e68a00;">
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      padding: 20px; 
+      line-height: 1.6; 
+      background-color: #f9f9f9; 
+      color: #333;
+    }
+    h1, h2 { color: #222; margin-top: 30px; }
+    h1 { font-size: 2em; }
+    h2 { font-size: 1.4em; }
+    p { margin: 10px 0; }
+    select { 
+      margin: 5px; 
+      padding: 8px 12px; 
+      border-radius: 4px; 
+      border: 1px solid #ccc; 
+      cursor: pointer;
+    }
+    .content { max-width: 900px; margin: auto; background-color: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <div>
+      <label for="lang-select">language:</label>
+      <select id="lang-select">
+        <option value="pt">Português</option>
+        <option value="en">English</option>
+        <option value="es">Español</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="th">ไทย</option>
+      </select>
+    </div>
+
+    <h1 data-i18n="terms_title"></h1>
+
+    <p data-i18n="update_date"></p>
+
+    <p data-i18n="intro"></p>
+
+    <h2 data-i18n="definitions_title"></h2>
+    <p data-i18n="definitions_text"></p>
+
+    <h2 data-i18n="section1_title"></h2>
+    <p data-i18n="section1_text"></p>
+
+    <h2 data-i18n="section2_title"></h2>
+    <p data-i18n="section2_text"></p>
+
+    <h2 data-i18n="section3_title"></h2>
+    <p data-i18n="section3_text"></p>
+
+    <h2 data-i18n="section4_title"></h2>
+    <p data-i18n="section4_text"></p>
+
+    <h2 data-i18n="section5_title"></h2>
+    <p data-i18n="section5_text"></p>
+
+    <h2 data-i18n="section6_title"></h2>
+    <p data-i18n="section6_text"></p>
+
+    <h2 data-i18n="section7_title"></h2>
+    <p data-i18n="section7_text"></p>
+
+    <h2 data-i18n="section8_title"></h2>
+    <p data-i18n="section8_text"></p>
+
+    <h2 data-i18n="section9_title"></h2>
+    <p data-i18n="section9_text"></p>
+
+    <h2 data-i18n="contact_title"></h2>
+    <p data-i18n="contact_text"></p>
+  </div>
+
+  <script>
+    const translations = {
+  pt: {
+    terms_title: "Termos e Condições de Sócios e Inscrições",
+    update_date: "Data de atualização: 25/10/2025",
+    intro: "Bem-vindo ao Site oficial do Esfera Andebol Masters! Ao acessar ou usar este site, você concorda em cumprir estes Termos e Condições.",
+    definitions_title: "Definições",
+    definitions_text: "Utilizador: qualquer pessoa que acessa ou utiliza o site.\nConteúdo: textos, imagens, vídeos, áudios ou qualquer material disponibilizado no site.\nServiço: produtos ou serviços oferecidos através do site.",
+    section1_title: "1. Uso do Site",
+    section1_text: "É proibido utilizar o site para fins ilegais, fraudulentos ou que infrinjam direitos de terceiros.",
+    section2_title: "2. Sócios e Inscrições",
+    section2_text: "Todos os sócios devem ter no mínimo 18 anos, contas de menores devem ser geridas por responsáveis.",
+    section3_title: "3. Propriedade Intelectual",
+    section3_text: "Todo o conteúdo do site é de propriedade da administração do Esfera Andebol Masters ou de seus licenciadores.",
+    section4_title: "4. Cadastro e Contas",
+    section4_text: "Os utilizadores devem fornecer informações verdadeiras e completas.",
+    section5_title: "5. Produtos e Serviços",
+    section5_text: "Preços e condições de pagamento estão descritos na página do produto ou serviço.",
+    section6_title: "6. Limitação de Responsabilidade",
+    section6_text: "O Esfera Andebol Masters não se responsabiliza por danos diretos ou indiretos decorrentes do uso do site.",
+    section7_title: "7. Privacidade e Dados Pessoais",
+    section7_text: "O uso do site está sujeito à nossa Política de Privacidade.",
+    section8_title: "8. Modificações nos Termos",
+    section8_text: "Podemos alterar estes Termos a qualquer momento, sendo a versão mais recente publicada no site.",
+    section9_title: "9. Lei Aplicável e Resolução de Disputas",
+    section9_text: "Estes Termos são regidos pela legislação de Portugal. Qualquer disputa será resolvida nos tribunais competentes de Portugal.",
+    contact_title: "Contato",
+    contact_text: "Para dúvidas, entre em contato: direcao@esferamasters.com"
+  },
+  en: {
+    terms_title: "Terms and Conditions for Members and Registration",
+    update_date: "Last update: 25/10/2025",
+    intro: "Welcome to the official Esfera Andebol Masters website! By accessing or using this website, you agree to comply with these Terms and Conditions.",
+    definitions_title: "Definitions",
+    definitions_text: "User: anyone accessing or using the site.\nContent: texts, images, videos, audios or any material provided on the site.\nService: products or services offered through the site.",
+    section1_title: "1. Use of the Site",
+    section1_text: "It is forbidden to use the site for illegal or fraudulent purposes or to infringe the rights of third parties.",
+    section2_title: "2. Members and Registration",
+    section2_text: "All members must be at least 18 years old, accounts of minors must be managed by guardians.",
+    section3_title: "3. Intellectual Property",
+    section3_text: "All content on the site is owned by Esfera Andebol Masters or its licensors.",
+    section4_title: "4. Registration and Accounts",
+    section4_text: "Users must provide true and complete information.",
+    section5_title: "5. Products and Services",
+    section5_text: "Prices and payment terms are described on the product or service page.",
+    section6_title: "6. Limitation of Liability",
+    section6_text: "Esfera Andebol Masters is not liable for direct or indirect damages resulting from the use of the site.",
+    section7_title: "7. Privacy and Personal Data",
+    section7_text: "Use of the site is subject to our Privacy Policy.",
+    section8_title: "8. Changes to Terms",
+    section8_text: "We may change these Terms at any time, with the latest version published on the site.",
+    section9_title: "9. Governing Law and Dispute Resolution",
+    section9_text: "These Terms are governed by Portuguese law. Any disputes will be resolved in the competent courts of Portugal.",
+    contact_title: "Contact",
+    contact_text: "For questions, contact: direcao@esferamasters.com"
+  },
+  es: {
+    terms_title: "Términos y Condiciones de Socios e Inscripciones",
+    update_date: "Última actualización: 25/10/2025",
+    intro: "¡Bienvenido al sitio oficial de Esfera Andebol Masters! Al acceder o usar este sitio, usted acepta cumplir con estos Términos y Condiciones.",
+    definitions_title: "Definiciones",
+    definitions_text: "Usuario: cualquier persona que accede o utiliza el sitio.\nContenido: textos, imágenes, videos, audios o cualquier material disponible en el sitio.\nServicio: productos o servicios ofrecidos a través del sitio.",
+    section1_title: "1. Uso del Sitio",
+    section1_text: "Está prohibido utilizar el sitio para fines ilegales, fraudulentos o que infrinjan los derechos de terceros.",
+    section2_title: "2. Socios e Inscripciones",
+    section2_text: "Todos los socios deben tener al menos 18 años, las cuentas de menores deben ser gestionadas por responsables.",
+    section3_title: "3. Propiedad Intelectual",
+    section3_text: "Todo el contenido del sitio es propiedad de la administración de Esfera Andebol Masters o de sus licenciantes.",
+    section4_title: "4. Registro y Cuentas",
+    section4_text: "Los usuarios deben proporcionar información verdadera y completa.",
+    section5_title: "5. Productos y Servicios",
+    section5_text: "Los precios y condiciones de pago se describen en la página del producto o servicio.",
+    section6_title: "6. Limitación de Responsabilidad",
+    section6_text: "Esfera Andebol Masters no se hace responsable de daños directos o indirectos derivados del uso del sitio.",
+    section7_title: "7. Privacidad y Datos Personales",
+    section7_text: "El uso del sitio está sujeto a nuestra Política de Privacidad.",
+    section8_title: "8. Modificaciones de los Términos",
+    section8_text: "Podemos cambiar estos Términos en cualquier momento, publicando la versión más reciente en el sitio.",
+    section9_title: "9. Ley Aplicable y Resolución de Disputas",
+    section9_text: "Estos Términos se rigen por la legislación de Portugal. Cualquier disputa será resuelta en los tribunales competentes de Portugal.",
+    contact_title: "Contacto",
+    contact_text: "Para dudas, contacte: direcao@esferamasters.com"
+  },
+  fr: {
+    terms_title: "Termes et Conditions pour Membres et Inscriptions",
+    update_date: "Dernière mise à jour : 25/10/2025",
+    intro: "Bienvenue sur le site officiel d'Esfera Andebol Masters ! En accédant ou en utilisant ce site, vous acceptez de respecter ces Termes et Conditions.",
+    definitions_title: "Définitions",
+    definitions_text: "Utilisateur : toute personne accédant ou utilisant le site.\nContenu : textes, images, vidéos, audios ou tout matériel fourni sur le site.\nService : produits ou services proposés via le site.",
+    section1_title: "1. Utilisation du Site",
+    section1_text: "Il est interdit d'utiliser le site à des fins illégales, frauduleuses ou portant atteinte aux droits de tiers.",
+    section2_title: "2. Membres et Inscriptions",
+    section2_text: "Tous les membres doivent avoir au moins 18 ans, les comptes des mineurs doivent être gérés par des tuteurs.",
+    section3_title: "3. Propriété Intellectuelle",
+    section3_text: "Tout le contenu du site appartient à l'administration d'Esfera Andebol Masters ou à ses concédants.",
+    section4_title: "4. Inscription et Comptes",
+    section4_text: "Les utilisateurs doivent fournir des informations vraies et complètes.",
+    section5_title: "5. Produits et Services",
+    section5_text: "Les prix et conditions de paiement sont décrits sur la page du produit ou du service.",
+    section6_title: "6. Limitation de Responsabilité",
+    section6_text: "Esfera Andebol Masters n'est pas responsable des dommages directs ou indirects résultant de l'utilisation du site.",
+    section7_title: "7. Confidentialité et Données Personnelles",
+    section7_text: "L'utilisation du site est soumise à notre Politique de Confidentialité.",
+    section8_title: "8. Modifications des Termes",
+    section8_text: "Nous pouvons modifier ces Termes à tout moment, la version la plus récente étant publiée sur le site.",
+    section9_title: "9. Droit Applicable et Résolution des Litiges",
+    section9_text: "Ces Termes sont régis par la législation portugaise. Tout litige sera résolu devant les tribunaux compétents du Portugal.",
+    contact_title: "Contact",
+    contact_text: "Pour toute question, contactez : direcao@esferamasters.com"
+  },
+  de: {
+    terms_title: "Allgemeine Geschäftsbedingungen für Mitglieder und Registrierung",
+    update_date: "Letzte Aktualisierung: 25/10/2025",
+    intro: "Willkommen auf der offiziellen Website von Esfera Andebol Masters! Durch den Zugriff auf oder die Nutzung dieser Website stimmen Sie diesen Allgemeinen Geschäftsbedingungen zu.",
+    definitions_title: "Definitionen",
+    definitions_text: "Benutzer: jede Person, die auf die Website zugreift oder sie nutzt.\nInhalt: Texte, Bilder, Videos, Audios oder sonstiges Material, das auf der Website bereitgestellt wird.\nDienstleistung: Produkte oder Dienstleistungen, die über die Website angeboten werden.",
+    section1_title: "1. Nutzung der Seite",
+    section1_text: "Die Nutzung der Website für illegale oder betrügerische Zwecke oder zur Verletzung der Rechte Dritter ist verboten.",
+    section2_title: "2. Mitglieder und Registrierung",
+    section2_text: "Alle Mitglieder müssen mindestens 18 Jahre alt sein, Konten von Minderjährigen müssen von Erziehungsberechtigten verwaltet werden.",
+    section3_title: "3. Geistiges Eigentum",
+    section3_text: "Alle Inhalte der Website sind Eigentum der Verwaltung von Esfera Andebol Masters oder ihrer Lizenzgeber.",
+    section4_title: "4. Registrierung und Konten",
+    section4_text: "Benutzer müssen wahrheitsgemäße und vollständige Informationen angeben.",
+    section5_title: "5. Produkte und Dienstleistungen",
+    section5_text: "Preise und Zahlungsbedingungen sind auf der Produkt- oder Serviceseite beschrieben.",
+    section6_title: "6. Haftungsbeschränkung",
+    section6_text: "Esfera Andebol Masters haftet nicht für direkte oder indirekte Schäden, die sich aus der Nutzung der Website ergeben.",
+    section7_title: "7. Datenschutz",
+    section7_text: "Die Nutzung der Website unterliegt unserer Datenschutzrichtlinie.",
+    section8_title: "8. Änderungen der Bedingungen",
+    section8_text: "Wir können diese Bedingungen jederzeit ändern, die aktuelle Version wird auf der Website veröffentlicht.",
+    section9_title: "9. Anwendbares Recht und Streitbeilegung",
+    section9_text: "Diese Bedingungen unterliegen dem portugiesischen Recht. Streitigkeiten werden vor den zuständigen Gerichten in Portugal beigelegt.",
+    contact_title: "Kontakt",
+    contact_text: "Bei Fragen kontaktieren Sie bitte: direcao@esferamasters.com"
+  },
+  th: {
+    terms_title: "ข้อกำหนดและเงื่อนไขสำหรับสมาชิกและการลงทะเบียน",
+    update_date: "อัปเดตล่าสุด: 25/10/2025",
+    intro: "ยินดีต้อนรับสู่เว็บไซต์อย่างเป็นทางการของ Esfera Andebol Masters! เมื่อเข้าถึงหรือใช้เว็บไซต์นี้ คุณตกลงที่จะปฏิบัติตามข้อกำหนดและเงื่อนไขเหล่านี้",
+    definitions_title: "คำจำกัดความ",
+    definitions_text: "ผู้ใช้: บุคคลใด ๆ ที่เข้าถึงหรือใช้เว็บไซต์\nเนื้อหา: ข้อความ รูปภาพ วิดีโอ เสียง หรือวัสดุใด ๆ ที่จัดเตรียมบนเว็บไซต์\nบริการ: ผลิตภัณฑ์หรือบริการที่เสนอผ่านเว็บไซต์",
+    section1_title: "1. การใช้เว็บไซต์",
+    section1_text: "ห้ามใช้เว็บไซต์เพื่อวัตถุประสงค์ที่ผิดกฎหมาย ฉ้อโกง หรือละเมิดสิทธิ์ของบุคคลที่สาม",
+    section2_title: "2. สมาชิกและการลงทะเบียน",
+    section2_text: "สมาชิกทุกคนต้องมีอายุอย่างน้อย 18 ปี, บัญชีของผู้เยาว์ต้องได้รับการจัดการโดยผู้ปกครอง",
+    section3_title: "3. ทรัพย์สินทางปัญญา",
+    section3_text: "เนื้อหาทั้งหมดบนเว็บไซต์เป็นทรัพย์สินของฝ่ายบริหารของ Esfera Andebol Masters หรือผู้อนุญาตของพวกเขา",
+    section4_title: "4. การลงทะเบียนและบัญชี",
+    section4_text: "ผู้ใช้ต้องให้ข้อมูลที่ถูกต้องและครบถ้วน",
+    section5_title: "5. ผลิตภัณฑ์และบริการ",
+    section5_text: "ราคาสินค้าและเงื่อนไขการชำระเงินระบุไว้ในหน้าผลิตภัณฑ์หรือบริการ",
+    section6_title: "6. ข้อจำกัดความรับผิด",
+    section6_text: "Esfera Andebol Masters จะไม่รับผิดชอบต่อความเสียหายโดยตรงหรือโดยอ้อมที่เกิดจากการใช้เว็บไซต์",
+    section7_title: "7. ความเป็นส่วนตัวและข้อมูลส่วนบุคคล",
+    section7_text: "การใช้เว็บไซต์เป็นไปตามนโยบายความเป็นส่วนตัวของเรา",
+    section8_title: "8. การแก้ไขข้อกำหนด",
+    section8_text: "เราสามารถเปลี่ยนแปลงข้อกำหนดเหล่านี้ได้ตลอดเวลา โดยเผยแพร่เวอร์ชันล่าสุดบนเว็บไซต์",
+    section9_title: "9. กฎหมายที่ใช้บังคับและการแก้ไขข้อพิพาท",
+    section9_text: "ข้อกำหนดเหล่านี้อยู่ภายใต้กฎหมายของโปรตุเกส ข้อพิพาทใด ๆ จะได้รับการแก้ไขที่ศาลที่มีอำนาจของโปรตุเกส",
+    contact_title: "ติดต่อ",
+    contact_text: "สำหรับคำถาม ติดต่อ: direcao@esferamasters.com"
+  }
+};
+
+    let currentLang = 'pt';
+
+    function loadLanguage(lang) {
+      const t = translations[lang];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        el.innerText = t[el.getAttribute('data-i18n')] || el.innerText;
+      });
+    }
+
+    loadLanguage(currentLang);
+
+    document.getElementById('lang-select').addEventListener('change', (e) => {
+      currentLang = e.target.value;
+      loadLanguage(currentLang);
+    });
+  </script>
+</body>
+</html>

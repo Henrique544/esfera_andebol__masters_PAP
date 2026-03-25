@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Área de Sócio</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1,h2 { color:#333; margin:0; }
+    .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:10px; flex-wrap:wrap; }
+    .btn { padding:8px 14px; border-radius:8px; border:none; cursor:pointer; color:#fff; }
+    .btn-primary { background:#007bff; }
+    .btn-danger { background:#dc3545; }
+    .btn:disabled { background:#aaa; cursor:not-allowed; }
+    .error { color:#d00; margin:10px 0; }
+    .card { background:#f6f6f6; padding:12px; border-radius:10px; border:1px solid #eee; margin-bottom:14px; }
+    .tabs { display:flex; gap:10px; flex-wrap:wrap; margin:10px 0; }
+    .tabbtn { padding:8px 12px; border-radius:999px; border:1px solid #ddd; cursor:pointer; background:#fff; }
+    .tabbtn.active { background:#111; color:#fff; border-color:#111; }
+    .panel { display:none; border:1px solid #ddd; border-radius:12px; padding:12px; margin-top:10px; }
+    .panel.active { display:block; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:end; margin-top:10px; }
+    input,select { padding:8px; border-radius:8px; border:1px solid #ccc; width:260px; }
+    table { width:100%; border-collapse:collapse; margin-top:10px; }
+    th,td { border:1px solid #ccc; padding:8px; text-align:left; }
+    th { background:#eee; }
+    .mini { font-size:12px; color:#666; }
+    .pill { display:inline-block; padding:6px 10px; border-radius:999px; background:#f1f3f5; border:1px solid #e9ecef; font-size:12px; }
+    .hr { height:1px; background:#eee; margin:12px 0; }
+    .linkbtn{padding:8px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer}
+
+    .ui-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:9999}
+    .ui-modal{width:min(520px,92vw);background:#fff;border-radius:16px;border:1px solid #eee;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden}
+    .ui-head{padding:14px 16px;border-bottom:1px solid #eee;display:flex;gap:10px;align-items:center;justify-content:space-between}
+    .ui-title{margin:0;font-size:16px}
+    .ui-close{border:none;background:transparent;font-size:18px;cursor:pointer;line-height:1}
+    .ui-body{padding:14px 16px;color:#222;white-space:pre-wrap}
+    .ui-foot{padding:12px 16px;border-top:1px solid #eee;display:flex;gap:10px;justify-content:flex-end}
+    .ui-btn{border:none;border-radius:10px;padding:10px 14px;cursor:pointer}
+    .ui-btn-primary{background:#111;color:#fff}
+    .ui-btn-ghost{background:#f2f2f2}
+    .ui-badge{font-size:12px;padding:4px 8px;border-radius:999px;background:#f1f3f5;border:1px solid #e9ecef}
+  </style>
+</head>
+<body style="display:none;" id="mainBody"> <div class="top">
+    <h1>Área de Sócio</h1>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn btn-primary" id="logoutBtn">Terminar sessão</button>
+      <button class="linkbtn" onclick="window.location.href='pagina_principal.html';">Voltar ao início</button>
+    </div>
+  </div>
+
+  <div id="msg" class="error"></div>
+  <div class="card" id="userCard">A carregar...</div>
+
+  <div class="tabs">
+    <button class="tabbtn active" data-tab="upgrade">Upgrade</button>
+    <button class="tabbtn" data-tab="quotas" id="tabQuotas">Quotas</button>
+    <button class="tabbtn" data-tab="seguranca">Segurança</button>
+    <button class="tabbtn" data-tab="historico">Históricos</button>
+    <button class="tabbtn" data-tab="conta">Conta</button>
+  </div>
+
+  <div class="panel active" id="panel-upgrade">
+    <h2>Upgrade</h2>
+    <p class="mini" id="upgradeHint">A carregar tipo...</p>
+
+    <form id="formUpgrade">
+      <div class="row">
+        <div>
+          <label><strong>Mudar para:</strong></label><br/>
+          <select id="upgradeTipo" required>
+            <option value="">-- selecionar --</option>
+            <option value="Normal">Sócio Normal</option>
+            <option value="Premium">Sócio Premium</option>
+          </select>
+        </div>
+
+        <div>
+          <label><strong>Password:</strong></label><br/>
+          <input type="password" id="upgradePass" required />
+        </div>
+
+        <button class="btn btn-primary" type="submit">Confirmar upgrade</button>
+      </div>
+    </form>
+
+    <div class="mini" style="margin-top:8px;">
+      Adepto também pode usar este upgrade para virar sócio (Normal/Premium).
+    </div>
+  </div>
+
+  <div class="panel" id="panel-quotas">
+    <h2>Quotas</h2>
+    <div id="quotasBlock">
+      <p class="mini" id="quotaHint"></p>
+
+      <form id="formQuota">
+        <div class="row">
+          <div>
+            <label><strong>Pagar meses (seguidos):</strong></label><br/>
+            <select id="quotaMeses" required>
+              <option value="1">1 mês</option>
+              <option value="2">2 meses</option>
+              <option value="3">3 meses</option>
+              <option value="4">4 meses</option>
+              <option value="6">6 meses</option>
+              <option value="12">12 meses</option>
+            </select>
+            <div class="mini" id="quotaRangeHint" style="margin-top:6px;"></div>
+          </div>
+
+          <div>
+            <label><strong>Password:</strong></label><br/>
+            <input type="password" id="quotaPass" required />
+          </div>
+
+          <button class="btn btn-primary" type="submit">Pagar quotas</button>
+        </div>
+      </form>
+
+      <div class="hr"></div>
+
+      <h3 style="margin:0 0 6px 0;">Pagamentos</h3>
+      <div id="quotaEmpty" class="mini" style="display:none;">Ainda não existem quotas pagas.</div>
+      <table id="quotaTable" style="display:none;">
+        <thead>
+          <tr><th>Data</th><th>Mês</th><th>Ano</th><th>Tipo</th><th>Valor</th></tr>
+        </thead>
+        <tbody id="quotaBody"></tbody>
+      </table>
+    </div>
+
+    <div id="quotasDenied" class="mini" style="display:none;">
+      Só Sócios (Normal/Premium) podem ver e pagar quotas.
+    </div>
+  </div>
+
+  <div class="panel" id="panel-seguranca">
+    <h2>Segurança</h2>
+    <p>O teu código atual: <strong id="codHint">••••-</strong></p>
+    <p class="mini">Se esqueceste, podes gerar um novo (precisas da password).</p>
+
+    <form id="formResetCodigo">
+      <div class="row">
+        <div>
+          <label><strong>Password:</strong></label><br/>
+          <input type="password" id="resetPass" required />
+        </div>
+        <button class="btn btn-primary" type="submit">Gerar novo código</button>
+      </div>
+    </form>
+    <div class="mini" style="margin-top:8px;">O novo código aparece apenas uma vez.</div>
+  </div>
+
+  <div class="panel" id="panel-historico">
+    <h2>Históricos</h2>
+
+    <div class="hr"></div>
+    <h3 style="margin:0 0 6px 0;">Bilhetes</h3>
+    <div id="emptyBilhetes" class="mini" style="display:none;">Ainda não compraste bilhetes.</div>
+    <table id="tBilhetes" style="display:none;">
+      <thead>
+        <tr><th>Compra</th><th>Jogo</th><th>Competição</th><th>Local</th><th>Data</th><th>Hora</th><th>Setor</th><th>Preço</th></tr>
+      </thead>
+      <tbody id="bBilhetes"></tbody>
+    </table>
+
+    <div class="hr"></div>
+    <h3 style="margin:0 0 6px 0;">Inscrições</h3>
+    <div id="emptyInscr" class="mini" style="display:none;">Ainda não tens inscrições.</div>
+    <table id="tInscr" style="display:none;">
+      <thead><tr><th>Data</th><th>Escalão</th><th>Mensalidade</th><th>Estado</th></tr></thead>
+      <tbody id="bInscr"></tbody>
+    </table>
+
+    <div class="hr"></div>
+    <h3 style="margin:0 0 6px 0;">Loja</h3>
+    <div id="emptyLoja" class="mini" style="display:none;">Ainda não fizeste compras na loja.</div>
+    <table id="tLoja" style="display:none;">
+      <thead><tr><th>Data</th><th>Produto</th><th>Quantidade</th><th>Total</th></tr></thead>
+      <tbody id="bLoja"></tbody>
+    </table>
+
+    <div class="hr"></div>
+    <h3 style="margin:0 0 6px 0;">Quotas (histórico)</h3>
+    <div id="emptyHQ" class="mini" style="display:none;">Ainda não tens quotas no histórico.</div>
+    <table id="tHQ" style="display:none;">
+      <thead><tr><th>Data</th><th>Mês</th><th>Ano</th><th>Tipo</th><th>Valor</th></tr></thead>
+      <tbody id="bHQ"></tbody>
+    </table>
+  </div>
+
+  <div class="panel" id="panel-conta">
+    <h2>Conta</h2>
+
+    <div class="card">
+      <h3 style="margin:0 0 8px 0;">Alterar nome</h3>
+      <form id="formMudarNome">
+        <div class="row">
+          <div>
+            <label><strong>Novo nome:</strong></label><br/>
+            <input type="text" id="novoNome" required />
+          </div>
+          <div>
+            <label><strong>Password:</strong></label><br/>
+            <input type="password" id="passNome" required />
+          </div>
+          <button class="btn btn-primary" type="submit">Guardar nome</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 8px 0;">Alterar password</h3>
+      <form id="formMudarPassword">
+        <div class="row">
+          <div>
+            <label><strong>Password atual:</strong></label><br/>
+            <input type="password" id="passAtual" required />
+          </div>
+          <div>
+            <label><strong>Nova password:</strong></label><br/>
+            <input type="password" id="passNova" required />
+            <div class="mini">8+ chars, maiúsc/minúsc, número e símbolo.</div>
+          </div>
+          <button class="btn btn-primary" type="submit">Guardar password</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="deleteBox">
+
+  <form id="formDeletePedir">
+    <div class="row">
+      <div>
+        <label><strong>Password:</strong></label><br/>
+        <input type="password" id="deletePass" required />
+      </div>
+      <button class="btn btn-danger" type="submit">Pedir código de confirmação</button>
+    </div>
+  </form>
+
+  <form id="formDeleteConfirmar" style="display: none;">
+    <div class="row">
+      <div>
+        <label><strong>Código de 10 dígitos (enviado por email):</strong></label><br/>
+        <input type="text" id="deleteCodigo" maxlength="10" pattern="\d{10}" required placeholder="0000000000" />
+      </div>
+      <button class="btn btn-danger" type="submit">Confirmar apagar conta</button>
+    </div>
+  </form>
+
+  <p style="size: 10px;">Esta ação apaga a tua conta e registos. Não dá para reverter.</p>
+
+  <div class="hr"></div>
+</div>
+
+  </div>
+
+  <div class="ui-backdrop" id="uiBackdrop" role="dialog" aria-modal="true">
+    <div class="ui-modal">
+      <div class="ui-head">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="ui-badge" id="uiKind">INFO</span>
+          <h3 class="ui-title" id="uiTitle">Aviso</h3>
+        </div>
+        <button class="ui-close" id="uiClose" aria-label="Fechar">✕</button>
+      </div>
+      <div class="ui-body" id="uiBody"></div>
+      <div class="ui-foot" id="uiFoot"></div>
+    </div>
+  </div>
+
+  <script>
+    // UI modal profissional
+    const ui = (() => {
+      const bd = document.getElementById("uiBackdrop");
+      const kind = document.getElementById("uiKind");
+      const title = document.getElementById("uiTitle");
+      const body = document.getElementById("uiBody");
+      const foot = document.getElementById("uiFoot");
+      const closeBtn = document.getElementById("uiClose");
+
+      function open({k="INFO", t="Aviso", html="", buttons=[]}){
+        kind.textContent = k;
+        title.textContent = t;
+        body.innerHTML = html;
+        foot.innerHTML = "";
+        buttons.forEach(b=>{
+          const btn=document.createElement("button");
+          btn.className="ui-btn " + (b.primary ? "ui-btn-primary" : "ui-btn-ghost");
+          btn.textContent=b.text;
+          btn.addEventListener("click", ()=>{ b.onClick?.(); });
+          foot.appendChild(btn);
+        });
+        bd.style.display="flex";
+      }
+      function close(){ bd.style.display="none"; }
+      closeBtn.addEventListener("click", close);
+      bd.addEventListener("click", (e)=>{ if(e.target===bd) close(); });
+
+      return {
+        alert({title="Aviso", message="", kind="INFO"}){
+          return new Promise(resolve=>{
+            open({
+              k: kind, t: title,
+              html: `<p style="margin:0">${String(message).replaceAll("\n","<br/>")}</p>`,
+              buttons:[{text:"OK", primary:true, onClick:()=>{ close(); resolve(true);} }]
+            });
+          });
+        },
+        confirm({title="Confirmar", message="", kind="CONFIRMAÇÃO"}){
+          return new Promise(resolve=>{
+            open({
+              k: kind, t: title,
+              html:`<p style="margin:0">${String(message).replaceAll("\n","<br/>")}</p>`,
+              buttons:[
+                {text:"Cancelar", onClick:()=>{ close(); resolve(false);} },
+                {text:"Confirmar", primary:true, onClick:()=>{ close(); resolve(true);} }
+              ]
+            });
+          });
+        }
+      };
+    })();
+
+    const API = "http://localhost:3000";
+    let currentEmail = null;
+    let currentTipo = null;
+
+    const euro = (v) => {
+      const n = Number(String(v).replace("€","").trim());
+      if (Number.isNaN(n)) return (v ?? "-");
+      return n.toFixed(2) + "€";
+    };
+
+    function getEmail() {
+      // 1. Tenta ir buscar ao URL (login fresco)
+      const params = new URLSearchParams(window.location.search);
+      let email = params.get("email");
+      
+      // 2. Se não estiver no URL, tenta no localStorage
+      if (!email) {
+        email = localStorage.getItem("emailSocio");
+      }
+      return email;
+    }
+
+    function setLoggedEmail(email) { 
+        if (email) localStorage.setItem("emailSocio", email); 
+    }
+
+    function showTab(key) {
+      document.querySelectorAll(".tabbtn").forEach(b => b.classList.toggle("active", b.dataset.tab === key));
+      document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+      const panel = document.getElementById("panel-" + key);
+      if (panel) panel.classList.add("active");
+    }
+
+    function renderUserCard(u) {
+      document.getElementById("userCard").innerHTML = `
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <span class="pill"><strong>Nome:</strong> ${u.nome ?? "-"}</span>
+          <span class="pill"><strong>Email:</strong> ${u.email ?? "-"}</span>
+          <span class="pill"><strong>Tipo:</strong> ${u.tipo ?? "-"}</span>
+          <span class="pill"><strong>Nº:</strong> ${u.numeroSocio ?? "-"}</span>
+          <span class="pill"><strong>Código:</strong> ••••-${u.codigoSegurancaHint ?? "----"}</span>
+        </div>
+      `;
+      document.getElementById("codHint").textContent = `••••-${u.codigoSegurancaHint ?? "----"}`;
+
+      const nn = document.getElementById("novoNome");
+      if (nn && !nn.value) nn.value = u.nome ?? "";
+    }
+
+    function renderTableOrEmpty(list, emptyEl, tableEl, bodyEl, rowHtmlFn) {
+      if (!list || list.length === 0) {
+        emptyEl.style.display = "block";
+        tableEl.style.display = "none";
+        bodyEl.innerHTML = "";
+        return;
+      }
+      emptyEl.style.display = "none";
+      tableEl.style.display = "table";
+      bodyEl.innerHTML = list.map(rowHtmlFn).join("");
+    }
+
+    async function loadQuotasList() {
+      const hint = document.getElementById("quotaHint");
+      const empty = document.getElementById("quotaEmpty");
+      const table = document.getElementById("quotaTable");
+      const body = document.getElementById("quotaBody");
+      const rangeHint = document.getElementById("quotaRangeHint");
+
+      const stRes = await fetch(`${API}/api/quotas/status?email=${encodeURIComponent(currentEmail)}`);
+      const st = await stRes.json();
+      if (!stRes.ok) {
+        hint.textContent = st.error || "Erro ao carregar status de quotas.";
+        rangeHint.textContent = "";
+        empty.style.display = "block";
+        table.style.display = "none";
+        return;
+      }
+
+      const { tipo, valorMensal, overdueMonths, nextUnpaid, diasRestantes, validadeAte } = st;
+      const nextStr = `${String(nextUnpaid.mes).padStart(2,"0")}/${nextUnpaid.ano}`;
+
+      let statusLine = `Tipo: ${tipo}. Valor mensal: ${Number(valorMensal).toFixed(2)}€ — Próxima quota por pagar: ${nextStr}.`;
+      if (overdueMonths > 0) statusLine += ` Em atraso: ${overdueMonths} mês(es).`;
+      if (validadeAte) statusLine += ` Quotas em dia até ${validadeAte} (${diasRestantes} dia(s) restantes).`;
+      hint.textContent = statusLine;
+
+      const n = Number(document.getElementById("quotaMeses")?.value || 1);
+      const start = nextUnpaid;
+      const startInt = (start.ano * 12) + (start.mes - 1);
+      const endInt = startInt + (n - 1);
+      const end = { ano: Math.floor(endInt / 12), mes: (endInt % 12) + 1 };
+
+      rangeHint.textContent =
+        `Vai pagar ${n} mês(es) seguidos: de ${String(start.mes).padStart(2,"0")}/${start.ano} até ${String(end.mes).padStart(2,"0")}/${end.ano}.`;
+
+      const res = await fetch(`${API}/api/quotas?email=${encodeURIComponent(currentEmail)}`);
+      const data = await res.json();
+      if (!res.ok) {
+        empty.style.display = "block";
+        table.style.display = "none";
+        return;
+      }
+
+      const pagos = data.pagos || [];
+      if (pagos.length === 0) {
+        empty.style.display = "block";
+        table.style.display = "none";
+        body.innerHTML = "";
+      } else {
+        empty.style.display = "none";
+        table.style.display = "table";
+        body.innerHTML = pagos.map(p =>
+          `<tr><td>${p.dataPagamento}</td><td>${p.mes}</td><td>${p.ano}</td><td>${p.tipo}</td><td>${euro(p.valor)}</td></tr>`
+        ).join("");
+      }
+    }
+
+    async function loadAll() {
+      const msg = document.getElementById("msg");
+      const email = getEmail();
+      
+      // ✅ PROTEÇÃO: Se não há email, manda para o login
+      if (!email) {
+        window.location.href = "login.html"; // Ajusta para o nome da tua página de login
+        return;
+      }
+      
+      // Se há email, mostra o corpo da página e guarda sessão
+      document.getElementById("mainBody").style.display = "block";
+      setLoggedEmail(email);
+      currentEmail = email;
+
+      try {
+        const res = await fetch(`${API}/api/historico?email=${encodeURIComponent(email)}`);
+        const data = await res.json();
+        if (!res.ok) {
+          msg.textContent = data.error || "Erro ao carregar.";
+          return;
+        }
+
+        msg.textContent = "";
+        currentTipo = data.user.tipo;
+
+        renderUserCard(data.user);
+
+        document.getElementById("upgradeHint").textContent =
+          `Tipo atual: ${currentTipo}. Escolhe Normal ou Premium e confirma com password.`;
+
+        const sel = document.getElementById("upgradeTipo");
+        [...sel.options].forEach(o => { if (o.value) o.disabled = (o.value === currentTipo); });
+
+        const isSocio = (currentTipo === "Normal" || currentTipo === "Premium");
+        document.getElementById("tabQuotas").style.display = isSocio ? "inline-block" : "none";
+        document.getElementById("quotasBlock").style.display = isSocio ? "block" : "none";
+        document.getElementById("quotasDenied").style.display = isSocio ? "none" : "block";
+
+        const h = data.historico || {};
+
+        renderTableOrEmpty(h.bilhetes || [],
+          document.getElementById("emptyBilhetes"),
+          document.getElementById("tBilhetes"),
+          document.getElementById("bBilhetes"),
+          (b) => `<tr>
+            <td>${b.dataCompra||"-"}</td><td>${b.jogo||"-"}</td><td>${b.competicao||"-"}</td>
+            <td>${b.local||"-"}</td><td>${b.dataJogo||"-"}</td><td>${b.horaJogo||"-"}</td>
+            <td>${b.setor||"-"}</td><td>${b.preco||"-"}</td>
+          </tr>`
+        );
+
+        renderTableOrEmpty(h.inscricoes || [],
+          document.getElementById("emptyInscr"),
+          document.getElementById("tInscr"),
+          document.getElementById("bInscr"),
+          (i) => `<tr><td>${i.dataInscricao||"-"}</td><td>${i.escalao||"-"}</td><td>${i.mensalidade||"-"}</td><td>${i.estado||"Pendente"}</td></tr>`
+        );
+
+        renderTableOrEmpty(h.loja || [],
+          document.getElementById("emptyLoja"),
+          document.getElementById("tLoja"),
+          document.getElementById("bLoja"),
+          (c) => `<tr><td>${c.dataCompra||"-"}</td><td>${c.produto||"-"}</td><td>${(c.quantidade ?? "-")}</td><td>${c.total||"-"}</td></tr>`
+        );
+
+        renderTableOrEmpty(h.quotas || [],
+          document.getElementById("emptyHQ"),
+          document.getElementById("tHQ"),
+          document.getElementById("bHQ"),
+          (q) => `<tr><td>${q.dataPagamento||"-"}</td><td>${q.mes ?? "-"}</td><td>${q.ano ?? "-"}</td><td>${q.tipo||"-"}</td><td>${q.valor||"-"}</td></tr>`
+        );
+
+        if (isSocio) await loadQuotasList();
+
+      } catch (e) {
+        console.error(e);
+        msg.textContent = "Erro de ligação ao servidor.";
+      }
+    }
+
+    // Tabs
+    document.querySelectorAll(".tabbtn").forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      const ok = await ui.confirm({ title:"Terminar sessão", message:"Queres terminar a sessão?" });
+      if (!ok) return;
+      localStorage.removeItem("emailSocio");
+      window.location.href = "login.html"; // Ajusta para o teu login
+    });
+
+    
+
+    // Upgrade
+    document.getElementById("formUpgrade").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const tipo = document.getElementById("upgradeTipo").value;
+      const password = document.getElementById("upgradePass").value.trim();
+      if (!tipo) return ui.alert({kind:"ERRO", title:"Upgrade", message:"Seleciona o tipo."});
+      if (!password) return ui.alert({kind:"ERRO", title:"Upgrade", message:"Insere a password."});
+
+      const ok = await ui.confirm({title:"Confirmar upgrade", message:`Confirmar upgrade para ${tipo}?`});
+      if (!ok) return;
+
+      const res = await fetch(`${API}/api/upgrade`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: currentEmail, tipo, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) return ui.alert({kind:"ERRO", title:"Upgrade", message:(data.error || "Erro no upgrade.")});
+
+      await ui.alert({kind:"SUCESSO", title:"Upgrade concluído", message:`Tipo atualizado: ${data.tipo}\nNº: ${data.numeroSocio}`});
+      document.getElementById("upgradePass").value = "";
+      document.getElementById("upgradeTipo").value = "";
+      await loadAll();
+      showTab("upgrade");
+    });
+
+    // Quotas (com validação de 1 ano)
+    document.getElementById("quotaMeses")?.addEventListener("change", () => {
+        if (currentTipo === "Normal" || currentTipo === "Premium") loadQuotasList();
+    });
+
+    document.getElementById("formQuota").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const meses = Number(document.getElementById("quotaMeses").value);
+        const password = document.getElementById("quotaPass").value.trim();
+        if (!password) return ui.alert({ kind: "ERRO", title: "Quotas", message: "Insere a password." });
+
+        const stRes = await fetch(`${API}/api/quotas/status?email=${encodeURIComponent(currentEmail)}`);
+        const st = await stRes.json();
+        if (!stRes.ok) return ui.alert({ kind: "ERRO", title: "Quotas", message: (st.error || "Erro ao carregar status.") });
+
+        const start = st.nextUnpaid;
+        const startInt = (start.ano * 12) + (start.mes - 1);
+        const endInt = startInt + (meses - 1);
+        const end = { ano: Math.floor(endInt / 12), mes: (endInt % 12) + 1 };
+
+        // Validação 1 ano
+        const hoje = new Date();
+        const currentAbsMonth = (hoje.getFullYear() * 12) + hoje.getMonth();
+        const limitAbsMonth = currentAbsMonth + 12;
+
+        if (endInt > limitAbsMonth) {
+            return ui.alert({
+                kind: "ERRO",
+                title: "Limite Excedido",
+                message: "Não é permitido adiantar quotas para além de 1 ano à frente da data atual."
+            });
+        }
+
+        const ok = await ui.confirm({
+            title: "Confirmar pagamento",
+            message: `Você irá pagar ${meses} mês(es) seguidos:\n\nDe ${String(start.mes).padStart(2, "0")}/${start.ano} até ${String(end.mes).padStart(2, "0")}/${end.ano}\n\nConfirmas?`
+        });
+        if (!ok) return;
+
+        const res = await fetch(`${API}/api/quotas/pagar`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: currentEmail, meses, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) return ui.alert({ kind: "ERRO", title: "Quotas", message: (data.error || "Erro ao pagar quotas.") });
+
+        await ui.alert({ kind: "SUCESSO", title: "Quotas", message: data.message || "Quotas pagas com sucesso!" });
+        document.getElementById("quotaPass").value = "";
+        await loadAll();
+        showTab("quotas");
+    });
+
+    // Segurança - reset código
+    document.getElementById("formResetCodigo").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const password = document.getElementById("resetPass").value.trim();
+      if (!password) return ui.alert({kind:"ERRO", title:"Segurança", message:"Insere a password."});
+
+      const res = await fetch(`${API}/api/seguranca/reset`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: currentEmail, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) return ui.alert({kind:"ERRO", title:"Segurança", message:(data.error || "Erro ao atualizar.")});
+
+      await ui.alert({
+        kind:"SUCESSO",
+        title:"Novo código",
+        message:`O teu novo código é:\n\n${data.codigoSeguranca}\n\nGuarda este código. (Só aparece uma vez.)`
+      });
+
+      document.getElementById("resetPass").value = "";
+      await loadAll();
+      showTab("seguranca");
+    });
+
+    // Mudar nome
+    document.getElementById("formMudarNome").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const novoNome = document.getElementById("novoNome").value.trim();
+      const password = document.getElementById("passNome").value.trim();
+
+      if (!novoNome) return ui.alert({ kind:"ERRO", title:"Nome", message:"Insere o novo nome." });
+      if (!password) return ui.alert({ kind:"ERRO", title:"Nome", message:"Insere a password." });
+
+      const ok = await ui.confirm({ title:"Confirmar alteração", message:`Alterar nome para:\n\n${novoNome}?` });
+      if (!ok) return;
+
+      const res = await fetch(`${API}/api/conta/mudar-nome`, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ email: currentEmail, password, novoNome })
+      });
+      const data = await res.json();
+      if (!res.ok) return ui.alert({ kind:"ERRO", title:"Nome", message: data.error || "Erro ao atualizar nome." });
+
+      await ui.alert({ kind:"SUCESSO", title:"Nome atualizado", message:"Nome atualizado com sucesso." });
+      document.getElementById("passNome").value = "";
+      await loadAll();
+      showTab("conta");
+    });
+
+    // Mudar password
+    document.getElementById("formMudarPassword").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const passwordAtual = document.getElementById("passAtual").value.trim();
+      const novaPassword = document.getElementById("passNova").value.trim();
+
+      if (!passwordAtual) return ui.alert({ kind:"ERRO", title:"Password", message:"Insere a password atual." });
+      if (!novaPassword) return ui.alert({ kind:"ERRO", title:"Password", message:"Insere a nova password." });
+
+      const ok = await ui.confirm({ title:"Confirmar alteração", message:"Queres alterar a tua password?" });
+      if (!ok) return;
+
+      const res = await fetch(`${API}/api/conta/mudar-password`, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ email: currentEmail, passwordAtual, novaPassword })
+      });
+      const data = await res.json();
+      if (!res.ok) return ui.alert({ kind:"ERRO", title:"Password", message: data.error || "Erro ao alterar password." });
+
+      await ui.alert({ kind:"SUCESSO", title:"Password alterada", message:"Password alterada com sucesso." });
+      document.getElementById("passAtual").value = "";
+      document.getElementById("passNova").value = "";
+      showTab("conta");
+    });
+
+    // PASSO 1 — Pedir código
+document.getElementById("formDeletePedir").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const password = document.getElementById("deletePass").value.trim();
+  if (!password) return ui.alert({kind:"ERRO", title:"Apagar conta", message:"Introduz a tua password."});
+
+  const ok = await ui.confirm({title:"Apagar conta", message:"Vais receber um código por email para confirmar. Continuar?"});
+  if (!ok) return;
+
+  try {
+    const res = await fetch(`${API}/api/conta/apagar/pedir`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: currentEmail, password }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) return ui.alert({kind:"ERRO", title:"Apagar conta", message: data.error || "Erro ao pedir código."});
+
+    await ui.alert({kind:"INFO", title:"Código enviado", message:"Código enviado para o teu email. Verifica a caixa de entrada."});
+    document.getElementById("formDeletePedir").style.display = "none";
+    document.getElementById("formDeleteConfirmar").style.display = "block";
+  } catch (err) {
+    console.error(err);
+    ui.alert({kind:"ERRO", title:"Erro", message:"Erro de ligação ao servidor."});
+  }
+});
+
+// PASSO 2 — Confirmar código e apagar
+document.getElementById("formDeleteConfirmar").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const codigo = document.getElementById("deleteCodigo").value.trim();
+  if (!codigo || codigo.length !== 10) return ui.alert({kind:"ERRO", title:"Apagar conta", message:"Introduz o código de 10 dígitos."});
+
+  const ok = await ui.confirm({title:"Apagar conta", message:"Tens a certeza? Esta ação é irreversível."});
+  if (!ok) return;
+
+  try {
+    const res = await fetch(`${API}/api/conta/apagar/confirmar`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: currentEmail, codigo }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) return ui.alert({kind:"ERRO", title:"Apagar conta", message: data.error || "Erro ao apagar conta."});
+
+    await ui.alert({kind:"SUCESSO", title:"Conta apagada", message:"A tua conta foi apagada com sucesso."});
+    localStorage.removeItem("emailSocio");
+    window.location.href = "login.html";
+  } catch (err) {
+    console.error(err);
+    ui.alert({kind:"ERRO", title:"Erro", message:"Erro de ligação ao servidor."});
+  }
+});
+
+    loadAll();
+  </script>
+</body>
+</html>
