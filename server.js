@@ -202,11 +202,11 @@ function calcTicketUnitPrice(setor, user) {
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 7, // Limite de 7 tentativas por IP
-  standardHeaders: true, // Retorna info nos headers `RateLimit-*`
-  legacyHeaders: false, // Desativa os headers `X-RateLimit-*`
+  standardHeaders: true,
+  legacyHeaders: false,
   message: { 
     error: "Muitas tentativas de login incorretas. Por segurança, tente novamente daqui a 15 minutos." 
-  }, // Mensagem JSON compatível com o teu frontend
+  },
 });
 
 // ---------------- DB: Jogos ----------------
